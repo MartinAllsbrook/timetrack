@@ -5,7 +5,9 @@
         "dev": "deno run --allow-all --unstable-kv npm:vite@^7.1.3",
         "build": "vite build",
         "start": "deno serve -A _fresh/server.js",
-        "update": "deno run -A -r jsr:@fresh/update ."
+        "update": "deno run -A -r jsr:@fresh/update .",
+        "clear-db": "deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts",
+        "clear-db:force": "deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts --force"
     },
     "fmt": {
         "indentWidth": 4
