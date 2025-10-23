@@ -1,5 +1,5 @@
 import type { Signal } from "@preact/signals";
-import type { TimeEntryWithProject } from "../types.ts";
+import type { TimeEntryWithProject } from "../src/types.ts";
 
 interface TimeEntriesListProps {
     timeEntries: Signal<TimeEntryWithProject[]>;

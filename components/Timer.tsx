@@ -1,6 +1,6 @@
 import { useEffect } from "preact/hooks";
 import type { Signal } from "@preact/signals";
-import type { ActiveSession, ProjectWithStats } from "../types.ts";
+import type { ActiveSession, ProjectWithStats } from "../src/types.ts";
 
 interface TimerProps {
     activeSession: Signal<ActiveSession | null>;

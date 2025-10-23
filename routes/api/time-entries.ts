@@ -1,8 +1,8 @@
 /// <reference lib="deno.unstable" />
 
 import { define } from "../../utils.ts";
-import { getDatabase } from "../../database.ts";
-import type { CreateTimeEntryRequest } from "../../types.ts";
+import { getDatabase } from "../../src/database.ts";
+import type { CreateTimeEntryRequest } from "../../src/types.ts";
 
 export const handler = define.handlers({
     async GET(_ctx) {

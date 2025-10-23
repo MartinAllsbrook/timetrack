@@ -1,5 +1,5 @@
 import type { Signal } from "@preact/signals";
-import type { ProjectWithStats } from "../types.ts";
+import type { ProjectWithStats } from "../src/types.ts";
 
 interface ProjectSelectorProps {
     projects: Signal<ProjectWithStats[]>;

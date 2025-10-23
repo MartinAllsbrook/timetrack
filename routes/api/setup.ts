@@ -1,7 +1,7 @@
 /// <reference lib="deno.unstable" />
 
 import { define } from "../../utils.ts";
-import { getDatabase } from "../../database.ts";
+import { getDatabase } from "../../src/database.ts";
 
 export const handler = define.handlers({
     async POST(_ctx) {

@@ -4,7 +4,7 @@ import type {
     ActiveSession,
     ProjectWithStats,
     TimeEntryWithProject,
-} from "../types.ts";
+} from "../src/types.ts";
 import ProjectSelector from "../components/ProjectSelector.tsx";
 import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
