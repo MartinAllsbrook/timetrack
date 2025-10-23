@@ -1,10 +1,102 @@
 @import "tailwindcss";
-.fresh-gradient {
-    background-color: rgb(134, 239, 172);
-    background-image: linear-gradient(
-        to right bottom,
-        rgb(219, 234, 254),
-        rgb(187, 247, 208),
-        rgb(254, 249, 195)
-    );
+
+/* Custom animations for the time tracker */
+@keyframes pulse-slow {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth transitions for project selection */
+.project-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.project-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Timer display enhancements */
+.timer-display {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.05em;
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+    backdrop-filter: blur(4px);
+}
+
+/* Loading states */
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Custom scrollbar for time entries */
+.time-entries-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.time-entries-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.time-entries-scroll::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.time-entries-scroll::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Status indicators */
+.status-active {
+    position: relative;
+}
+
+.status-active::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    animation: pulse-slow 2s infinite;
+}
+
+/* Button hover effects */
+.btn-hover-scale {
+    transition: transform 0.1s ease-in-out;
+}
+
+.btn-hover-scale:hover {
+    transform: scale(1.02);
+}
+
+.btn-hover-scale:active {
+    transform: scale(0.98);
 }

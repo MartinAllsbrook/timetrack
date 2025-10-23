@@ -1,33 +1,21 @@
-import { useSignal } from "@preact/signals";
 import { Head } from "fresh/runtime";
 import { define } from "../utils.ts";
-import Counter from "../islands/Counter.tsx";
+import TimeTracker from "../islands/TimeTracker.tsx";
 
 export default define.page(function Home(ctx) {
-    const count = useSignal(3);
-
     console.log("Shared value " + ctx.state.shared);
 
     return (
-        <div class="px-4 py-8 mx-auto fresh-gradient min-h-screen">
+        <div class="min-h-screen bg-gray-50">
             <Head>
-                <title>Fresh counter</title>
-            </Head>
-            <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
-                <img
-                    class="my-6"
-                    src="/logo.svg"
-                    width="128"
-                    height="128"
-                    alt="the Fresh logo: a sliced lemon dripping with juice"
+                <title>TimeTrack - Time Tracking App</title>
+                <meta
+                    name="description"
+                    content="Track your time across different projects with TimeTrack"
                 />
-                <h1 class="text-4xl font-bold">Welcome to Fresh</h1>
-                <p class="my-4">
-                    Try updating this message in the
-                    <code class="mx-2">./routes/index.tsx</code>{" "}
-                    file, and refresh.
-                </p>
-                <Counter count={count} />
+            </Head>
+            <div class="px-4 py-8">
+                <TimeTracker />
             </div>
         </div>
     );
