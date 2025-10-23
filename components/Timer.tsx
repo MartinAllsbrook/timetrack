@@ -1,5 +1,4 @@
-import { useEffect } from "preact/hooks";
-import type { Signal } from "@preact/signals";
+import { useSignalEffect, type Signal } from "@preact/signals";
 import type { ActiveSession, ProjectWithStats } from "../src/types.ts";
 
 // Helper function to ensure dates are properly converted from strings to Date objects
@@ -23,16 +22,14 @@ export default function Timer(props: TimerProps) {
     const elapsed = currentTime - startTime;
 
     // Re-render every second when tracking is active
-    useEffect(() => {
+    useSignalEffect(() => {
         if (!props.activeSession.value) return;
 
-        const interval = setInterval(() => {
+        setTimeout(() => {
             // Force re-render by updating a signal
             props.activeSession.value = { ...props.activeSession.value! };
         }, 1000);
-
-        return () => clearInterval(interval);
-    }, [props.activeSession.value]);
+    });
 
     const isTracking = !!props.activeSession.value;
     const canStart = !!props.selectedProject.value && !isTracking;

@@ -1,5 +1,5 @@
 import { useEffect } from "preact/hooks";
-import { useSignal } from "@preact/signals";
+import { useSignal, useSignalEffect } from "@preact/signals";
 import type {
     ActiveSession,
     ProjectWithStats,
@@ -13,10 +13,10 @@ import CreateProjectModal from "../components/CreateProjectModal.tsx";
 export default function TimeTracker() {
     // Signals for state management
     const projects = useSignal<ProjectWithStats[]>([]);
-    const timeEntries = useSignal<TimeEntryWithProject[]>([]);
-    const activeSession = useSignal<ActiveSession | null>(null);
     const selectedProjectId = useSignal<string | null>(null);
     const selectedProject = useSignal<ProjectWithStats | null>(null);
+    const timeEntries = useSignal<TimeEntryWithProject[]>([]);
+    const activeSession = useSignal<ActiveSession | null>(null);
     const isLoading = useSignal(false);
     const isCreateModalOpen = useSignal(false);
 
@@ -26,12 +26,12 @@ export default function TimeTracker() {
     }, []);
 
     // Update selected project when selection changes
-    useEffect(() => {
+    useSignalEffect(() => {
         const project = projects.value.find((p) =>
             p.id === selectedProjectId.value
         ) || null;
         selectedProject.value = project;
-    }, [selectedProjectId.value, projects.value]);
+    });
 
     async function loadData() {
         try {
@@ -195,6 +195,7 @@ export default function TimeTracker() {
     }
 
     return (
+
         <div class="max-w-6xl mx-auto space-y-6">
             {/* Header */}
             <div class="text-center">
