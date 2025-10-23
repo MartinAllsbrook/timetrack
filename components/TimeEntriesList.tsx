@@ -1,6 +1,11 @@
 import type { Signal } from "@preact/signals";
 import type { TimeEntryWithProject } from "../src/types.ts";
 
+// Helper function to ensure dates are properly converted from strings to Date objects
+function ensureDate(date: Date | string): Date {
+    return date instanceof Date ? date : new Date(date);
+}
+
 interface TimeEntriesListProps {
     timeEntries: Signal<TimeEntryWithProject[]>;
     onDeleteEntry: (id: string) => void;
@@ -8,7 +13,6 @@ interface TimeEntriesListProps {
 
 export default function TimeEntriesList(props: TimeEntriesListProps) {
     const recentEntries = props.timeEntries.value.slice(0, 10); // Show last 10 entries
-
     return (
         <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">
@@ -50,12 +54,12 @@ export default function TimeEntriesList(props: TimeEntriesListProps) {
                                             </div>
                                         )}
                                         <div class="text-xs text-gray-500">
-                                            {formatDate(entry.startTime)}
+                                            {formatDate(ensureDate(entry.startTime))}
                                             {entry.endTime &&
                                                 ` • ${
                                                     formatTimeRange(
-                                                        entry.startTime,
-                                                        entry.endTime,
+                                                        ensureDate(entry.startTime),
+                                                        ensureDate(entry.endTime),
                                                     )
                                                 }`}
                                             {!entry.endTime && " • Active"}
@@ -68,14 +72,12 @@ export default function TimeEntriesList(props: TimeEntriesListProps) {
                                         <div class="font-medium text-gray-900">
                                             {entry.endTime
                                                 ? formatDuration(
-                                                    entry.endTime.getTime() -
-                                                        entry.startTime
-                                                            .getTime(),
+                                                    ensureDate(entry.endTime).getTime() -
+                                                        ensureDate(entry.startTime).getTime(),
                                                 )
                                                 : formatDuration(
                                                     new Date().getTime() -
-                                                        entry.startTime
-                                                            .getTime(),
+                                                        ensureDate(entry.startTime).getTime(),
                                                 )}
                                         </div>
                                         {!entry.endTime && (

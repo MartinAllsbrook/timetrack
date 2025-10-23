@@ -17,7 +17,10 @@ export default function ProjectSelector(props: ProjectSelectorProps) {
                 </h3>
                 <button
                     type="button"
-                    onClick={props.onCreateProject}
+                    onClick={() => {
+                        // console.log("Calling", props.onCreateProject); 
+                        props.onCreateProject();
+                    }}
                     class="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
                 >
                     + New Project

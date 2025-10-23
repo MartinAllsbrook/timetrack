@@ -2,8 +2,8 @@ import { Head } from "fresh/runtime";
 import { define } from "../utils.ts";
 import TimeTracker from "../islands/TimeTracker.tsx";
 
-export default define.page(function Home(ctx) {
-    console.log("Shared value " + ctx.state.shared);
+export default define.page(function Home(_ctx) {
+    // console.log("Shared value " + ctx.state.shared);
 
     return (
         <div class="min-h-screen bg-gray-50">

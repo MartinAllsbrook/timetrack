@@ -185,7 +185,9 @@ export default function TimeTracker() {
     }
 
     function openCreateModal() {
+        console.log("Vlaue before:", isCreateModalOpen.value);
         isCreateModalOpen.value = true;
+        console.log("Value after:", isCreateModalOpen.value);
     }
 
     function closeCreateModal() {
