@@ -7,7 +7,9 @@
         "start": "deno serve -A _fresh/server.js",
         "update": "deno run -A -r jsr:@fresh/update .",
         "clear-db": "deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts",
-        "clear-db:force": "deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts --force"
+        "clear-db:force": "deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts --force",
+        "list-db": "deno run --allow-read --allow-write --unstable-kv tasks/listDatabase.ts",
+        "list-db:verbose": "deno run --allow-read --allow-write --unstable-kv tasks/listDatabase.ts --verbose"
     },
     "fmt": {
         "indentWidth": 4
