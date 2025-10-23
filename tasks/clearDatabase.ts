@@ -10,8 +10,13 @@
  * - Active session data
  * 
  * Usage: 
- *   deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts
- *   deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts --force
+ * - deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts
+ * - deno run --allow-read --allow-write --unstable-kv tasks/clearDatabase.ts --force
+ * 
+ * ## TODO: 
+ * - Make this more generic, 
+ * - Remove emojis,
+ * - Use built in user confirmation utilities instead of typing 'yes' 
  */
 
 async function clearDatabase() {
