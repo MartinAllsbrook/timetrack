@@ -1,4 +1,4 @@
-import { useSignalEffect, type Signal } from "@preact/signals";
+import { useSignal, useSignalEffect, type Signal } from "@preact/signals";
 import type { ActiveSession, ProjectWithStats } from "../src/types.ts";
 import { StartStopButton } from "./StartStopButton.tsx";
 
@@ -16,6 +16,9 @@ interface TimerProps {
 }
 
 export default function Timer(props: TimerProps) {
+    const isTracking = useSignal(false);
+    const canStart = useSignal(false);
+
     const currentTime = new Date().getTime();
     const startTime = props.activeSession.value?.startTime 
         ? ensureDate(props.activeSession.value.startTime).getTime()
@@ -34,9 +37,9 @@ export default function Timer(props: TimerProps) {
         return () => clearTimeout(timeout);
     });
 
-    const isTracking = !!props.activeSession.value;
-    const canStart = !!props.selectedProject.value && !isTracking;
-
+    isTracking.value = !!props.activeSession.value;
+    canStart.value = !!props.selectedProject.value && !isTracking.value;
+    
     return (
         <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <div class="text-center space-y-4">
@@ -44,12 +47,12 @@ export default function Timer(props: TimerProps) {
                 <div class="space-y-2">
                     <div
                         class={`text-4xl font-mono font-bold timer-display ${
-                            isTracking ? "text-green-600" : "text-gray-400"
+                            isTracking.value ? "text-green-600" : "text-gray-400"
                         }`}
                     >
-                        {formatTime(isTracking ? elapsed : 0)}
+                        {formatTime(isTracking.value ? elapsed : 0)}
                     </div>
-                    {isTracking && props.selectedProject.value && (
+                    {isTracking.value && props.selectedProject.value && (
                         <div class="flex items-center justify-center space-x-2 status-active">
                             <div
                                 class="w-3 h-3 rounded-full"
@@ -74,7 +77,7 @@ export default function Timer(props: TimerProps) {
                     onStart={props.onStart}
                     onStop={props.onStop}
                     canStart={canStart}
-                    isLoading={props.isLoading.value}
+                    isLoading={props.isLoading}
                 />
                 {/* <div class="flex justify-center space-x-4">
                     {!isTracking
@@ -109,7 +112,7 @@ export default function Timer(props: TimerProps) {
                 </div> */}
 
                 {/* Status Message */}
-                {!props.selectedProject.value && !isTracking && (
+                {!props.selectedProject.value && !isTracking.value && (
                     <p class="text-gray-500 text-sm">
                         Select a project to start tracking time
                     </p>
