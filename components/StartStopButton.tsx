@@ -1,33 +1,46 @@
 import { Signal } from "@preact/signals";
 
 export function StartStopButton(props: {
-    started: Signal<boolean>;
+    started: boolean;
+    onStart?: () => void;
+    onStop?: () => void;
+    canStart?: boolean;
+    isLoading?: boolean;
 }) {
-    const started = props.started;
+    const { started, canStart, isLoading} = props;
+
+    console.log("StartStopButton - started:", started, "canStart:", canStart, "isLoading:", isLoading);
 
     const handleClick = () => {
-        started.value = !started.value;
+        if (started) {
+            props.onStop?.();
+        } else {
+            props.onStart?.();
+        }
     };
 
     return (
         <button
             type="button"
             onClick={handleClick}
-            style={{
-                width: "80px",
-                height: "80px",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "bold",
-                color: "white",
-                backgroundColor: started.value ? "#dc2626" : "#16a34a",
-                transition: "background-color 0.2s ease",
-            }}
-            title={started.value ? "Click to Stop" : "Click to Start"}
+            className={`
+                w-20 h-20 rounded-lg cursor-pointer 
+                text-sm font-bold text-white
+                transition-colors duration-200 ease-in-out
+                ${((!canStart && !started) || isLoading) ?
+                    "bg-gray-400 cursor-not-allowed" :
+                    (started ? 
+                        "bg-red-600 hover:bg-red-700" : 
+                        "bg-green-600 hover:bg-green-700"
+                    )
+                }
+            `}
+            title={started ? 
+                (isLoading ? "Stop" : "Stoping...") : 
+                (isLoading ? "Start" : "Starting...")
+            }
         >
-            {started.value ? "STOP" : "START"}
+            {started ? "STOP" : "START"}
         </button>
     );
 }
