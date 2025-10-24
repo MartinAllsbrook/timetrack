@@ -1,6 +1,7 @@
 import { Head } from "fresh/runtime";
 import { define } from "../utils.ts";
-import Testing from "../islands/Testing.tsx";
+import ProjectSelectTesting from "../islands/testing/ProjectSelectTesting.tsx";
+import CurrentEntryEditorTesting from "../islands/testing/CurrentEntryEditorTesting.tsx";
 
 export default define.page(function Test(_ctx) {
     return (
@@ -13,7 +14,8 @@ export default define.page(function Test(_ctx) {
                 />
             </Head>
             <div class="px-4 py-8">
-                <Testing />
+                {/* <ProjectSelectTesting /> */}
+                <CurrentEntryEditorTesting />
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import { useSignal, signal } from "@preact/signals";
-import { ProjectSelect } from "../components/ProjectSelect.tsx";
-import type { ProjectWithStats } from "../src/types.ts";
+import { ProjectSelect } from "../../components/ProjectSelect.tsx";
+import type { ProjectWithStats } from "../../src/types.ts";
 
 export default function Testing() {
     // Mock projects data for testing ProjectSelect
