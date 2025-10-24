@@ -79,12 +79,12 @@ export default function Timer(props: TimerProps) {
                     isLoading={props.isLoading}
                 />
 
-                {/* Status Message (has been moved) */}
-                {/* {!props.selectedProject.value && !isTracking.value && (
+                {/* Status Message */}
+                {!props.selectedProject.value && !isTracking.value && (
                     <p class="text-gray-500 text-sm">
                         Select a project to start tracking time
                     </p>
-                )} */}
+                )}
             </div>
     );
 }

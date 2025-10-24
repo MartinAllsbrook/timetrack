@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant hover (&:hover);
 
 /* Custom animations for the time tracker */
 @keyframes pulse-slow {

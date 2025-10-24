@@ -9,7 +9,6 @@ import ProjectSelector from "../components/ProjectSelector.tsx";
 import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
 import CreateProjectModal from "../components/CreateProjectModal.tsx";
-import { ProjectSelect } from "../components/ProjectSelect.tsx";
 import { CurrentEntryEditor } from "../components/CurrentEntryEditor.tsx";
 
 export default function TimeTracker() {
