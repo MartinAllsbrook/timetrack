@@ -1,5 +1,6 @@
 import { useSignalEffect, type Signal } from "@preact/signals";
 import type { ActiveSession, ProjectWithStats } from "../src/types.ts";
+import { StartStopButton } from "./StartStopButton.tsx";
 
 // Helper function to ensure dates are properly converted from strings to Date objects
 function ensureDate(date: Date | string): Date {
@@ -25,10 +26,12 @@ export default function Timer(props: TimerProps) {
     useSignalEffect(() => {
         if (!props.activeSession.value) return;
 
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
             // Force re-render by updating a signal
             props.activeSession.value = { ...props.activeSession.value! };
         }, 1000);
+
+        return () => clearTimeout(timeout);
     });
 
     const isTracking = !!props.activeSession.value;
@@ -66,7 +69,14 @@ export default function Timer(props: TimerProps) {
                 </div>
 
                 {/* Control Buttons */}
-                <div class="flex justify-center space-x-4">
+                <StartStopButton
+                    started={isTracking}
+                    onStart={props.onStart}
+                    onStop={props.onStop}
+                    canStart={canStart}
+                    isLoading={props.isLoading.value}
+                />
+                {/* <div class="flex justify-center space-x-4">
                     {!isTracking
                         ? (
                             <button
@@ -96,7 +106,7 @@ export default function Timer(props: TimerProps) {
                                     : "Stop Tracking"}
                             </button>
                         )}
-                </div>
+                </div> */}
 
                 {/* Status Message */}
                 {!props.selectedProject.value && !isTracking && (
