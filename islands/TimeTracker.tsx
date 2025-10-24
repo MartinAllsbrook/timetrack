@@ -10,6 +10,7 @@ import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
 import CreateProjectModal from "../components/CreateProjectModal.tsx";
 import { ProjectSelect } from "../components/ProjectSelect.tsx";
+import { CurrentEntryEditor } from "../components/CurrentEntryEditor.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -20,6 +21,9 @@ export default function TimeTracker() {
     const activeSession = useSignal<ActiveSession | null>(null);
     const isLoading = useSignal(false);
     const isCreateModalOpen = useSignal(false);
+
+    /** A desciption of the current task / entry being tracked */
+    let currentEntryDesciption: string | undefined = undefined; 
 
     // Load initial data
     useEffect(() => {
@@ -113,6 +117,7 @@ export default function TimeTracker() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     projectId: selectedProjectId.value,
+                    description: currentEntryDesciption,
                 }),
             });
 
@@ -212,13 +217,14 @@ export default function TimeTracker() {
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div class="space-y-6">
-                    {/* Project Selector */}
                     <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <ProjectSelector
+                        <CurrentEntryEditor
                             projects={projects}
                             selectedProjectId={selectedProjectId}
                             onProjectSelect={handleProjectSelect}
-                            onCreateProject={openCreateModal}
+                            onDescriptionChange={(desc) => {
+                                currentEntryDesciption = desc;
+                            }}
                         />
                     </div>
 
@@ -231,20 +237,25 @@ export default function TimeTracker() {
                             onStop={stopTracking}
                             isLoading={isLoading}
                         />
-                        <ProjectSelect
-                            projects={projects}
-                            selectedProjectId={selectedProjectId}
-                            onProjectSelect={handleProjectSelect}
-                        />
                     </div>
                 </div>
 
                 {/* Right Column */}
-                <div>
+                <div class="space-y-6">
                     <TimeEntriesList
                         timeEntries={timeEntries}
                         onDeleteEntry={deleteTimeEntry}
                     />
+
+                    {/* Project Selector */}
+                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                        <ProjectSelector
+                            projects={projects}
+                            selectedProjectId={selectedProjectId}
+                            onProjectSelect={handleProjectSelect}
+                            onCreateProject={openCreateModal}
+                        />
+                    </div>
                 </div>
             </div>
 
