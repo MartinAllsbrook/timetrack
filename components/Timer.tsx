@@ -41,8 +41,7 @@ export default function Timer(props: TimerProps) {
     canStart.value = !!props.selectedProject.value && !isTracking.value;
     
     return (
-        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div class="text-center space-y-4">
+        <div class="text-center space-y-4">
                 {/* Timer Display */}
                 <div class="space-y-2">
                     <div
@@ -80,14 +79,13 @@ export default function Timer(props: TimerProps) {
                     isLoading={props.isLoading}
                 />
 
-                {/* Status Message */}
-                {!props.selectedProject.value && !isTracking.value && (
+                {/* Status Message (has been moved) */}
+                {/* {!props.selectedProject.value && !isTracking.value && (
                     <p class="text-gray-500 text-sm">
                         Select a project to start tracking time
                     </p>
-                )}
+                )} */}
             </div>
-        </div>
     );
 }
 

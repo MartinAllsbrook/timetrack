@@ -9,6 +9,7 @@ import ProjectSelector from "../components/ProjectSelector.tsx";
 import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
 import CreateProjectModal from "../components/CreateProjectModal.tsx";
+import { ProjectSelect } from "../components/ProjectSelect.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -222,13 +223,20 @@ export default function TimeTracker() {
                     </div>
 
                     {/* Timer */}
-                    <Timer
-                        activeSession={activeSession}
-                        selectedProject={selectedProject}
-                        onStart={startTracking}
-                        onStop={stopTracking}
-                        isLoading={isLoading}
-                    />
+                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                        <Timer
+                            activeSession={activeSession}
+                            selectedProject={selectedProject}
+                            onStart={startTracking}
+                            onStop={stopTracking}
+                            isLoading={isLoading}
+                        />
+                        <ProjectSelect
+                            projects={projects}
+                            selectedProjectId={selectedProjectId}
+                            onProjectSelect={handleProjectSelect}
+                        />
+                    </div>
                 </div>
 
                 {/* Right Column */}

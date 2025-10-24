@@ -38,7 +38,7 @@ export function ProjectSelect(props: ProjectSelectProps) {
                                 <span class="text-gray-900">{selectedProject.name}</span>
                             </>
                         ) : (
-                            <span class="text-gray-500">Select a project...</span>
+                            <span class="text-gray-500">Select a project to start</span>
                         )}
                     </div>
                     <svg
