@@ -79,37 +79,6 @@ export default function Timer(props: TimerProps) {
                     canStart={canStart}
                     isLoading={props.isLoading}
                 />
-                {/* <div class="flex justify-center space-x-4">
-                    {!isTracking
-                        ? (
-                            <button
-                                type="button"
-                                onClick={props.onStart}
-                                disabled={!canStart || props.isLoading.value}
-                                class={`px-8 py-3 rounded-lg font-medium text-white transition-all btn-hover-scale ${
-                                    canStart && !props.isLoading.value
-                                        ? "bg-green-600 hover:bg-green-700"
-                                        : "bg-gray-400 cursor-not-allowed"
-                                }`}
-                            >
-                                {props.isLoading.value
-                                    ? "Starting..."
-                                    : "Start Tracking"}
-                            </button>
-                        )
-                        : (
-                            <button
-                                type="button"
-                                onClick={props.onStop}
-                                disabled={props.isLoading.value}
-                                class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all btn-hover-scale disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                {props.isLoading.value
-                                    ? "Stopping..."
-                                    : "Stop Tracking"}
-                            </button>
-                        )}
-                </div> */}
 
                 {/* Status Message */}
                 {!props.selectedProject.value && !isTracking.value && (
