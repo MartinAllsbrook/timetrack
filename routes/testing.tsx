@@ -3,8 +3,9 @@ import { define } from "../utils.ts";
 import _ProjectSelectTesting from "../islands/testing/ProjectSelectTesting.tsx";
 import _CurrentEntryEditorTesting from "../islands/testing/CurrentEntryEditorTesting.tsx";
 import _ProjectEditorTesting from "../islands/testing/ProjectEditorTesting.tsx";
-import CreateProjectModalTesting from "../islands/testing/CreateProjectModalTesting.tsx";
-import EditProjectModalTesting from "../islands/testing/EditProjectModalTesting.tsx";
+import _CreateProjectModalTesting from "../islands/testing/CreateProjectModalTesting.tsx";
+import _EditProjectModalTesting from "../islands/testing/EditProjectModalTesting.tsx";
+import TimelineTesting from "../islands/testing/TimelineTesting.tsx";
 
 export default define.page(function Test(_ctx) {
     return (
@@ -21,7 +22,8 @@ export default define.page(function Test(_ctx) {
                 {/* <CurrentEntryEditorTesting /> */}
                 {/* <ProjectEditorTesting /> */}
                 {/* <CreateProjectModalTesting /> */}
-                <EditProjectModalTesting />
+                {/* <EditProjectModalTesting /> */}
+                <TimelineTesting />
             </div>
         </div>
     );
