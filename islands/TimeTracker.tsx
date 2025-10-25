@@ -77,6 +77,33 @@ export default function TimeTracker() {
         }
     }
 
+    async function updateProject(
+        projectId: string,
+        name?: string,
+        description?: string,
+        color?: string,
+    ) {
+        try {
+            const response = await fetch("/api/projects", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: projectId, name, description, color }),
+            });
+            if (response.ok) {
+                const updatedProject = await response.json();
+                projects.value = projects.value.map((project) =>
+                    project.id === projectId
+                        ? { ...project, ...updatedProject }
+                        : project
+                );
+            } else {
+                throw new Error("Failed to update project");
+            }
+        } catch (error) {
+            console.error("Error updating project:", error);
+        }
+    }
+
     async function createProject(
         name: string,
         description?: string,
@@ -190,9 +217,7 @@ export default function TimeTracker() {
     }
 
     function openCreateModal() {
-        console.log("Vlaue before:", isCreateModalOpen.value);
         isCreateModalOpen.value = true;
-        console.log("Value after:", isCreateModalOpen.value);
     }
 
     function closeCreateModal() {

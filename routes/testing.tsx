@@ -1,8 +1,9 @@
 import { Head } from "fresh/runtime";
 import { define } from "../utils.ts";
-import ProjectSelectTesting from "../islands/testing/ProjectSelectTesting.tsx";
-import CurrentEntryEditorTesting from "../islands/testing/CurrentEntryEditorTesting.tsx";
-import ProjectEditorTesting from "../islands/testing/ProjectEditorTesting.tsx";
+import _ProjectSelectTesting from "../islands/testing/ProjectSelectTesting.tsx";
+import _CurrentEntryEditorTesting from "../islands/testing/CurrentEntryEditorTesting.tsx";
+import _ProjectEditorTesting from "../islands/testing/ProjectEditorTesting.tsx";
+import CreateProjectModalTesting from "../islands/testing/CreateProjectModalTesting.tsx";
 
 export default define.page(function Test(_ctx) {
     return (
@@ -17,7 +18,8 @@ export default define.page(function Test(_ctx) {
             <div class="px-4 py-8">
                 {/* <ProjectSelectTesting /> */}
                 {/* <CurrentEntryEditorTesting /> */}
-                <ProjectEditorTesting />
+                {/* <ProjectEditorTesting /> */}
+                <CreateProjectModalTesting />
             </div>
         </div>
     );
