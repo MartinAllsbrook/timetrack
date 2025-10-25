@@ -2,6 +2,7 @@ import { useEffect } from "preact/hooks";
 import { useSignal, useSignalEffect } from "@preact/signals";
 import type {
     ActiveSession,
+    Project,
     ProjectWithStats,
     TimeEntryWithProject,
 } from "../src/types.ts";
@@ -10,6 +11,8 @@ import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
 import CreateProjectModal from "../components/CreateProjectModal.tsx";
 import { CurrentEntryEditor } from "../components/CurrentEntryEditor.tsx";
+import ProjectEditor from "../components/ProjectEditor.tsx";
+import EditProjectModal from "../components/EditProjectModal.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -20,9 +23,11 @@ export default function TimeTracker() {
     const activeSession = useSignal<ActiveSession | null>(null);
     const isLoading = useSignal(false);
     const isCreateModalOpen = useSignal(false);
+    const projectToEditId = useSignal<Project | null>(null);
 
     /** A desciption of the current task / entry being tracked */
     let currentEntryDesciption: string | undefined = undefined; 
+
 
     // Load initial data
     useEffect(() => {
@@ -77,7 +82,7 @@ export default function TimeTracker() {
         }
     }
 
-    async function updateProject(
+    async function editProject(
         projectId: string,
         name?: string,
         description?: string,
@@ -224,6 +229,15 @@ export default function TimeTracker() {
         isCreateModalOpen.value = false;
     }
 
+    function openEditModal(projectId: string) {
+        projectToEditId.value = projects.value.find((p) => p.id === projectId) || null;
+    }
+
+    function closeEditModal() {
+        projectToEditId.value = null;
+    }
+
+
     return (
 
         <div class="max-w-6xl mx-auto space-y-6">
@@ -273,11 +287,10 @@ export default function TimeTracker() {
 
                     {/* Project Selector */}
                     <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <ProjectSelector
+                        <ProjectEditor
                             projects={projects}
-                            selectedProjectId={selectedProjectId}
-                            onProjectSelect={handleProjectSelect}
                             onCreateProject={openCreateModal}
+                            onProjectEdit={openEditModal}
                         />
                     </div>
                 </div>
@@ -288,6 +301,13 @@ export default function TimeTracker() {
                 isOpen={isCreateModalOpen.value}
                 onClose={closeCreateModal}
                 onCreateProject={createProject}
+            />
+
+            {/* Edit Project Modal */}
+            <EditProjectModal
+                onClose={closeEditModal}
+                project={projectToEditId.value}
+                onEditProject={editProject}
             />
         </div>
     );
