@@ -28,19 +28,16 @@ export default function Timeline({
     });
     
     // Generate hour markers
-    const hourMarkers = Array.from({ length: 25 }, (_, i) => {
-        const hour = new Date(startOfDay);
-        hour.setHours(i);
-        return hour;
-    });
+    const hourMarkers = Array.from({ length: 24 }, (_, i) => i);
     
-    const formatHour = (hour: Date) => {
-        return hour.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            hour12: false 
-        }).replace(':00', '');
+    const formatHour = (hour: number) => {
+        return hour.toString().padStart(2, '0');
     };
     
+    /**
+     * Gets total duration of all entries for the day
+     * @returns - Formatted total duration string
+     */
     const getTotalDuration = () => {
         const total = dayEntries.reduce((acc, entry) => {
             const start = Math.max(entry.startTime.getTime(), startOfDay.getTime());
@@ -58,14 +55,8 @@ export default function Timeline({
     return (
         <div className={`timeline-container ${className}`}>
             {/* Header */}
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '16px',
-                padding: '0 8px'
-            }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
+            <div className="flex justify-between items-center mb-4 px-2">
+                <h3 className="m-0 text-lg font-semibold">
                     {date.toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 
@@ -73,49 +64,24 @@ export default function Timeline({
                         day: 'numeric' 
                     })}
                 </h3>
-                <div style={{ 
-                    fontSize: '14px', 
-                    color: '#6B7280',
-                    display: 'flex',
-                    gap: '16px'
-                }}>
+                <div className="text-sm text-gray-500 flex gap-4">
                     <span>{dayEntries.length} entries</span>
                     <span>Total: {getTotalDuration()}</span>
                 </div>
             </div>
             
             {/* Timeline */}
-            <div style={{
-                position: 'relative',
-                height: '80px',
-                backgroundColor: '#F9FAFB',
-                border: '1px solid #E5E7EB',
-                borderRadius: '8px',
-                overflow: 'hidden'
-            }}>
+            <div className="relative h-20 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
                 {/* Hour markers */}
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '20px',
-                    borderBottom: '1px solid #E5E7EB',
-                    display: 'flex'
-                }}>
-                    {hourMarkers.slice(0, 24).map((hour, index) => (
+                <div className="absolute top-0 left-0 right-0 h-5 border-b border-gray-200 flex">
+                    {hourMarkers.map((hour, index) => (
                         <div
                             key={index}
-                            style={{
-                                flex: 1,
-                                borderRight: index < 23 ? '1px solid #F3F4F6' : 'none',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '10px',
-                                color: '#9CA3AF',
-                                backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F9FAFB'
-                            }}
+                            className={`flex-1 flex items-center justify-center text-xs text-gray-400 ${
+                                index < 23 ? 'border-r border-gray-100' : ''
+                            } ${
+                                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                            }`}
                         >
                             {formatHour(hour)}
                         </div>
@@ -123,14 +89,7 @@ export default function Timeline({
                 </div>
                 
                 {/* Timeline entries */}
-                <div style={{
-                    position: 'absolute',
-                    top: '20px',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    padding: '8px'
-                }}>
+                <div className="absolute top-5 left-0 right-0 bottom-0 p-2">
                     {dayEntries.map((entry) => (
                         <TimelineEntry
                             key={entry.id}
@@ -145,15 +104,7 @@ export default function Timeline({
                 
                 {/* Empty state */}
                 {dayEntries.length === 0 && (
-                    <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        color: '#9CA3AF',
-                        fontSize: '14px',
-                        textAlign: 'center'
-                    }}>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-400 text-sm text-center">
                         No time entries for this day
                     </div>
                 )}
@@ -161,13 +112,7 @@ export default function Timeline({
             
             {/* Legend */}
             {dayEntries.length > 0 && (
-                <div style={{
-                    marginTop: '12px',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                    fontSize: '12px'
-                }}>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
                     {Array.from(new Set(dayEntries.map(e => e.project.id)))
                         .map(projectId => {
                             const project = dayEntries.find(e => e.project.id === projectId)?.project;
@@ -176,18 +121,12 @@ export default function Timeline({
                             return (
                                 <div
                                     key={projectId}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px'
-                                    }}
+                                    className="flex items-center gap-1"
                                 >
                                     <div
+                                        className="w-3 h-3 rounded-sm"
                                         style={{
-                                            width: '12px',
-                                            height: '12px',
-                                            backgroundColor: project.color || '#3B82F6',
-                                            borderRadius: '2px'
+                                            backgroundColor: project.color || '#3B82F6'
                                         }}
                                     />
                                     <span>{project.name}</span>
@@ -197,24 +136,7 @@ export default function Timeline({
                     }
                 </div>
             )}
-            
-            <style>
-                {`
-                    @keyframes pulse {
-                        0%, 100% {
-                            opacity: 1;
-                        }
-                        50% {
-                            opacity: 0.5;
-                        }
-                    }
-                    
-                    .timeline-entry:hover {
-                        transform: translateY(-1px);
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-                    }
-                `}
-            </style>
+
         </div>
     );
 }

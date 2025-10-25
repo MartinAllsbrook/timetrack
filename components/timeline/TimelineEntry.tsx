@@ -19,7 +19,7 @@ export default function TimelineEntry({
     const entryStart = Math.max(timeEntry.startTime.getTime(), startOfDay.getTime());
     const entryEnd = timeEntry.endTime 
         ? Math.min(timeEntry.endTime.getTime(), endOfDay.getTime())
-        : endOfDay.getTime(); // If still running, show until end of day
+        : Math.min(Date.now(), endOfDay.getTime()); // If still running, show until now or end of day
     
     const entryDuration = entryEnd - entryStart;
     const startOffset = entryStart - startOfDay.getTime();
@@ -28,7 +28,7 @@ export default function TimelineEntry({
     const leftPercent = (startOffset / dayDuration) * 100;
     const widthPercent = (entryDuration / dayDuration) * 100;
     
-    const isActive = !timeEntry.endTime;
+    const isActive = !timeEntry.endTime; // TODO: We've kindof already calculated this above but idk if it's that important
     
     const formatTime = (date: Date) => {
         return date.toLocaleTimeString('en-US', { 
@@ -46,53 +46,25 @@ export default function TimelineEntry({
     
     return (
         <div
-            className="timeline-entry"
+            className={`absolute h-10 rounded cursor-pointer flex items-center justify-center text-white text-xs font-medium transition-all duration-200 min-w-0.5 shadow-sm hover:-translate-y-px hover:shadow-md ${
+                isActive ? 'border-2 border-emerald-500' : 'border border-white border-opacity-20'
+            }`}
             style={{
-                position: 'absolute',
                 left: `${leftPercent}%`,
                 width: `${widthPercent}%`,
-                height: '40px',
                 backgroundColor: project.color || '#3B82F6',
-                border: isActive ? '2px solid #10B981' : '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '500',
-                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                transition: 'all 0.2s ease',
-                minWidth: '2px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                textShadow: '0 1px 2px rgba(0,0,0,0.5)'
             }}
             onClick={() => onEntryClick?.(timeEntry)}
             title={`${project.name}\n${formatTime(timeEntry.startTime)} - ${timeEntry.endTime ? formatTime(timeEntry.endTime) : 'Active'}\n${formatDuration(entryDuration)}${timeEntry.description ? `\n${timeEntry.description}` : ''}`}
         >
             {widthPercent > 15 && (
-                <span style={{ 
-                    overflow: 'hidden', 
-                    textOverflow: 'ellipsis', 
-                    whiteSpace: 'nowrap',
-                    padding: '0 4px'
-                }}>
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap px-1">
                     {project.name}
                 </span>
             )}
             {isActive && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        right: '2px',
-                        top: '2px',
-                        width: '8px',
-                        height: '8px',
-                        backgroundColor: '#10B981',
-                        borderRadius: '50%',
-                        animation: 'pulse 2s infinite'
-                    }}
-                />
+                <div className="absolute right-0.5 top-0.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             )}
         </div>
     );
