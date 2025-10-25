@@ -80,7 +80,10 @@ export default function TimeTracker() {
 
             if (sessionRes.ok) {
                 const sessionData = await sessionRes.json();
-                activeSession.value = sessionData.activeSession;
+                const session = sessionData.activeSession;
+                if (session) session.startTime = new Date(session.startTime)
+                
+                activeSession.value = session;
             }
         } catch (error) {
             console.error("Failed to load data:", error);
