@@ -21,12 +21,13 @@ export default function Timeline({
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     
+    // TODO: I think eventually we will only want to querry the part of the DB that the timeline is showing but we should still filter here to make sure
     // Filter entries for this day
     const dayEntries = timeEntries.filter(entry => {
         const entryDate = new Date(entry.startTime);
         return entryDate.toDateString() === date.toDateString();
     });
-    
+
     // Generate hour markers
     const hourMarkers = Array.from({ length: 24 }, (_, i) => i);
     

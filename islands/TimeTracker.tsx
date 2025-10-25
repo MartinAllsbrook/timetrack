@@ -6,13 +6,13 @@ import type {
     ProjectWithStats,
     TimeEntryWithProject,
 } from "../src/types.ts";
-import ProjectSelector from "../components/ProjectSelector.tsx";
 import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
 import CreateProjectModal from "../components/CreateProjectModal.tsx";
 import { CurrentEntryEditor } from "../components/CurrentEntryEditor.tsx";
 import ProjectEditor from "../components/ProjectEditor.tsx";
 import EditProjectModal from "../components/EditProjectModal.tsx";
+import Timeline from "../components/timeline/Timeline.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -68,6 +68,13 @@ export default function TimeTracker() {
 
             if (entriesRes.ok) {
                 const entriesData = await entriesRes.json();
+                for (const entry of entriesData) {
+                    entry.startTime = new Date(entry.startTime);
+                    if (entry.endTime) {
+                        entry.endTime = new Date(entry.endTime);
+                    }
+                }
+
                 timeEntries.value = entriesData;
             }
 
@@ -294,6 +301,13 @@ export default function TimeTracker() {
                         />
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <Timeline
+                    date={new Date()}
+                    timeEntries={timeEntries.value}
+                />
             </div>
 
             {/* Create Project Modal */}

@@ -9,8 +9,6 @@ export function StartStopButton(props: {
 }) {
     const { started, canStart, isLoading} = props;
 
-    console.log("StartStopButton - started:", started.value, "canStart:", canStart.value, "isLoading:", isLoading.value);
-
     const handleClick = () => {
         if (started.value) {
             props.onStop?.();

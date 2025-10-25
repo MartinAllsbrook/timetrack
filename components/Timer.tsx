@@ -2,11 +2,6 @@ import { useSignal, useSignalEffect, type Signal } from "@preact/signals";
 import type { ActiveSession, ProjectWithStats } from "../src/types.ts";
 import { StartStopButton } from "./StartStopButton.tsx";
 
-// Helper function to ensure dates are properly converted from strings to Date objects
-function ensureDate(date: Date | string): Date {
-    return date instanceof Date ? date : new Date(date);
-}
-
 interface TimerProps {
     activeSession: Signal<ActiveSession | null>;
     selectedProject: Signal<ProjectWithStats | null>;
@@ -21,7 +16,7 @@ export default function Timer(props: TimerProps) {
 
     const currentTime = new Date().getTime();
     const startTime = props.activeSession.value?.startTime 
-        ? ensureDate(props.activeSession.value.startTime).getTime()
+        ? props.activeSession.value.startTime.getTime()
         : currentTime;
     const elapsed = currentTime - startTime;
 
