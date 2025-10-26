@@ -19,7 +19,8 @@ class DatabaseService {
         this.kv = kv;
     }
 
-    // Project operations
+    //#region Project operations
+
     async createProject(data: CreateProjectRequest): Promise<Project> {
         const id = crypto.randomUUID();
         const now = new Date();
@@ -117,7 +118,9 @@ class DatabaseService {
         return true;
     }
 
-    // Time entry operations
+    //#endregion
+
+    //#region Time entry operations
     async createTimeEntry(data: CreateTimeEntryRequest): Promise<TimeEntry> {
         const id = crypto.randomUUID();
         const now = new Date();
@@ -222,6 +225,8 @@ class DatabaseService {
         await this.kv.delete(["timeEntries", id]);
         return true;
     }
+
+    //#endregion
 
     // Active session operations
     async getActiveSession(): Promise<ActiveSession | null> {

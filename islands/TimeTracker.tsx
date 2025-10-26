@@ -25,8 +25,8 @@ export default function TimeTracker() {
     const isCreateModalOpen = useSignal(false);
     const projectToEditId = useSignal<Project | null>(null);
 
-    /** A desciption of the current task / entry being tracked */
-    let currentEntryDesciption: string | undefined = undefined; 
+    /** A description of the current task / entry being tracked */
+    let currentEntryDescription: string | undefined = undefined; 
 
 
     // Load initial data
@@ -92,6 +92,8 @@ export default function TimeTracker() {
         }
     }
 
+    //#region Project Management
+
     async function editProject(
         projectId: string,
         name?: string,
@@ -99,10 +101,10 @@ export default function TimeTracker() {
         color?: string,
     ) {
         try {
-            const response = await fetch("/api/projects", {
+            const response = await fetch(`/api/projects/${projectId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: projectId, name, description, color }),
+                body: JSON.stringify({ name, description, color }),
             });
             if (response.ok) {
                 const updatedProject = await response.json();
@@ -110,6 +112,11 @@ export default function TimeTracker() {
                     project.id === projectId
                         ? { ...project, ...updatedProject }
                         : project
+                );
+                timeEntries.value = timeEntries.value.map((entry) =>
+                    entry.project.id === projectId
+                        ? { ...entry, project: { ...entry.project, ...updatedProject } }
+                        : entry
                 );
             } else {
                 throw new Error("Failed to update project");
@@ -147,6 +154,8 @@ export default function TimeTracker() {
         }
     }
 
+    //#endregion
+
     async function startTracking() {
         if (!selectedProjectId.value) return;
 
@@ -158,9 +167,9 @@ export default function TimeTracker() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     projectId: selectedProjectId.value,
-                    description: currentEntryDesciption,
+                    description: currentEntryDescription,
                 }),
-            });
+            })
 
             if (response.ok) {
                 const newEntry = await response.json();
@@ -204,6 +213,8 @@ export default function TimeTracker() {
         }
     }
 
+    //#region Tracking
+
     async function deleteTimeEntry(entryId: string) {
         try {
             const response = await fetch(`/api/time-entries/${entryId}`, {
@@ -226,6 +237,12 @@ export default function TimeTracker() {
             console.error("Error deleting time entry:", error);
         }
     }
+
+    async function editTimeEntry(entryId: string) {
+
+    }
+
+    //#endregion
 
     function handleProjectSelect(projectId: string) {
         selectedProjectId.value = projectId;
@@ -271,7 +288,8 @@ export default function TimeTracker() {
                             selectedProjectId={selectedProjectId}
                             onProjectSelect={handleProjectSelect}
                             onDescriptionChange={(desc) => {
-                                currentEntryDesciption = desc;
+                                currentEntryDescription = desc;
+
                             }}
                         />
                     </div>
