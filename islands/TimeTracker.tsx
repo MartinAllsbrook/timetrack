@@ -5,6 +5,7 @@ import type {
     Project,
     ProjectWithStats,
     TimeEntryWithProject,
+    UpdateTimeEntryRequest,
 } from "../src/types.ts";
 import Timer from "../components/Timer.tsx";
 import TimeEntriesList from "../components/TimeEntriesList.tsx";
@@ -156,6 +157,8 @@ export default function TimeTracker() {
 
     //#endregion
 
+    //#region Tracking
+
     async function startTracking() {
         if (!selectedProjectId.value) return;
 
@@ -213,7 +216,9 @@ export default function TimeTracker() {
         }
     }
 
-    //#region Tracking
+    //#endregion
+
+    //#region Time Entry Management
 
     async function deleteTimeEntry(entryId: string) {
         try {
@@ -238,14 +243,54 @@ export default function TimeTracker() {
         }
     }
 
-    async function editTimeEntry(entryId: string) {
+    async function editTimeEntry(
+        entryId: string,
+        updates: UpdateTimeEntryRequest
+    ) {
+        try {
+            const response = await fetch(`/api/time-entries/${entryId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updates),
+            });
 
+            if (response.ok) {
+                const updatedEntry = await response.json();
+                
+                updatedEntry.startTime = new Date(updatedEntry.startTime);
+                if (updatedEntry.endTime) {
+                    updatedEntry.endTime = new Date(updatedEntry.endTime);
+                }
+
+                timeEntries.value = timeEntries.value.map((entry) =>
+                    entry.id === entryId
+                        ? { ...entry, ...updatedEntry }
+                        : entry
+                );
+            } else {
+                throw new Error("Failed to update time entry");
+            }
+        } catch (error) {
+            console.error("Error updating time entry:", error);
+        }
     }
 
     //#endregion
 
     function handleProjectSelect(projectId: string) {
         selectedProjectId.value = projectId;
+    }
+
+    function editActiveEntry(projectId?: string, description?: string) { // TODO: If we made these optional parameters, we might not need to update both every time?
+        if (!activeSession.value) return; 
+
+        if (projectId) selectedProjectId.value = projectId;
+        if (description) currentEntryDescription = description;
+
+        editTimeEntry(activeSession.value.entryId, { 
+            projectId, 
+            description 
+        });
     }
 
     function openCreateModal() {
@@ -289,8 +334,8 @@ export default function TimeTracker() {
                             onProjectSelect={handleProjectSelect}
                             onDescriptionChange={(desc) => {
                                 currentEntryDescription = desc;
-
                             }}
+                            editActiveEntry={editActiveEntry}
                         />
                     </div>
 

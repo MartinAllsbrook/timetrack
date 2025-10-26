@@ -1,4 +1,3 @@
-import { render } from "preact";
 import { ProjectSelect } from "./ProjectSelect.tsx";
 import { ProjectWithStats } from "../src/types.ts";
 import { Signal, useSignal } from "@preact/signals";
@@ -7,8 +6,9 @@ import { useEffect } from "preact/hooks";
 interface CurrentEntryEditorProps {
     projects: Signal<ProjectWithStats[]>;
     selectedProjectId: Signal<string | null>;
-    onProjectSelect: (projectId: string) => void;
-    onDescriptionChange: (description: string) => void;
+    onProjectSelect: (projectId: string) => void; // TODO: Remove
+    onDescriptionChange: (description: string) => void; // TODO: Remove
+    editActiveEntry: (projectId?: string, description?: string) => void;
 }
 
 export function CurrentEntryEditor(props: CurrentEntryEditorProps) {
@@ -23,9 +23,9 @@ export function CurrentEntryEditor(props: CurrentEntryEditorProps) {
             clearTimeout(debounceTimeout.value);
         }
         
-        // Set new timeout to call onDescriptionChange after user stops typing
+        // Set new timeout to call editActiveEntry after user stops typing
         debounceTimeout.value = setTimeout(() => {
-            props.onDescriptionChange(value);
+            props.editActiveEntry(undefined, value);
         }, 500); // 500ms delay after user stops typing
     };
 
@@ -47,7 +47,7 @@ export function CurrentEntryEditor(props: CurrentEntryEditorProps) {
                 <ProjectSelect
                     projects={props.projects}
                     selectedProjectId={props.selectedProjectId}
-                    onProjectSelect={props.onProjectSelect}
+                    onProjectSelect={(projectId) => props.editActiveEntry(projectId)}
                 />
             </div>
             

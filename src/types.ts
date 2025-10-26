@@ -56,6 +56,8 @@ export interface CreateTimeEntryRequest {
 export interface UpdateTimeEntryRequest {
     endTime?: Date;
     description?: string;
+    projectId?: string;
+    startTime?: Date;
 }
 
 // Application state
