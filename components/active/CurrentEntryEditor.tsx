@@ -1,5 +1,5 @@
-import { ProjectSelect } from "./ProjectSelect.tsx";
-import { ProjectWithStats } from "../src/types.ts";
+import { ProjectSelect } from "../ProjectSelect.tsx";
+import { ProjectWithStats } from "../../src/types.ts";
 import { Signal, useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 

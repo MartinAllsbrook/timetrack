@@ -1,5 +1,5 @@
 import { useSignal, useSignalEffect, type Signal } from "@preact/signals";
-import type { ActiveSession, ProjectWithStats } from "../src/types.ts";
+import type { ActiveSession, ProjectWithStats } from "src/types.ts";
 import { StartStopButton } from "./StartStopButton.tsx";
 
 interface TimerProps {

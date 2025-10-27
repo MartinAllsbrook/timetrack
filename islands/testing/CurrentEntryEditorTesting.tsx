@@ -1,6 +1,6 @@
 import { useSignal, signal } from "@preact/signals";
-import { CurrentEntryEditor } from "../../components/CurrentEntryEditor.tsx";
-import type { ProjectWithStats } from "../../src/types.ts";
+import { CurrentEntryEditor } from "components/active/CurrentEntryEditor.tsx";
+import type { ProjectWithStats } from "src/types.ts";
 
 export default function CurrentEntryEditorTesting() {
     // Mock projects data for testing CurrentEntryEditor
@@ -57,14 +57,15 @@ export default function CurrentEntryEditorTesting() {
     const selectedProjectId = useSignal<string | null>(null);
     const currentDescription = useSignal<string>("");
     
-    const handleProjectSelect = (projectId: string) => {
-        selectedProjectId.value = projectId;
-        console.log("Selected project:", projectId);
-    };
-    
-    const handleDescriptionChange = (description: string) => {
-        currentDescription.value = description;
-        console.log("Description changed:", description);
+    const editActiveEntry = (projectId?: string, description?: string) => {
+        if (projectId !== undefined) {
+            selectedProjectId.value = projectId;
+            console.log("Selected project:", projectId);
+        }
+        if (description !== undefined) {
+            currentDescription.value = description;
+            console.log("Description changed:", description);
+        }
     };
 
     return (
@@ -76,8 +77,7 @@ export default function CurrentEntryEditorTesting() {
                 <CurrentEntryEditor
                     projects={projects}
                     selectedProjectId={selectedProjectId}
-                    onProjectSelect={handleProjectSelect}
-                    onDescriptionChange={handleDescriptionChange}
+                    editActiveEntry={editActiveEntry}
                 />
             </div>
             
@@ -122,8 +122,9 @@ export default function CurrentEntryEditorTesting() {
                     <li>• Select different projects from the dropdown</li>
                     <li>• Type in the description field and observe the debounced updates</li>
                     <li>• Check the debug information below to see real-time state changes</li>
-                    <li>• Notice the 500ms delay before description changes are logged</li>
+                    <li>• Notice the 750ms delay before description changes are logged</li>
                     <li>• Test with projects that have active entries (Mobile App)</li>
+                    <li>• Description is saved to localStorage and restored on page reload</li>
                 </ul>
             </div>
         </div>
