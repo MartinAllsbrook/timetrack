@@ -6,14 +6,28 @@ import { useEffect } from "preact/hooks";
 interface CurrentEntryEditorProps {
     projects: Signal<ProjectWithStats[]>;
     selectedProjectId: Signal<string | null>;
-    onProjectSelect: (projectId: string) => void; // TODO: Remove
-    onDescriptionChange: (description: string) => void; // TODO: Remove
     editActiveEntry: (projectId?: string, description?: string) => void;
 }
+
+const STORAGE_KEY = "timetrack_current_description";
 
 export function CurrentEntryEditor(props: CurrentEntryEditorProps) {
     const description = useSignal("");
     const debounceTimeout = useSignal<number | null>(null);
+
+    // Load saved description on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                description.value = saved;
+                // Restore the description to the active entry
+                props.editActiveEntry(undefined, saved);
+            }
+        } catch (error) {
+            console.warn("Failed to load saved description:", error);
+        }
+    }, []);
 
     const handleDescriptionChange = (value: string) => {
         description.value = value;
@@ -23,10 +37,22 @@ export function CurrentEntryEditor(props: CurrentEntryEditorProps) {
             clearTimeout(debounceTimeout.value);
         }
         
-        // Set new timeout to call editActiveEntry after user stops typing
+        // Set Timeout so that we are not constantly updating.
         debounceTimeout.value = setTimeout(() => {
             props.editActiveEntry(undefined, value);
-        }, 500); // 500ms delay after user stops typing
+
+            // Save to localStorage
+            // Should we do this only on successful save of the entry or more frequently. This keeps it synced with the DB so it might cause less unexpected behavior
+            try {
+                if (value.trim()) {
+                    localStorage.setItem(STORAGE_KEY, value);
+                } else {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            } catch (error) {
+                console.warn("Failed to save description:", error);
+            }
+        }, 750); // TODO: I wonder if there's like a cool way to adjust this dynamically... 
     };
 
     // Cleanup timeout on unmount

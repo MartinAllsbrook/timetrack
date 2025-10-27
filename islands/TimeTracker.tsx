@@ -331,10 +331,6 @@ export default function TimeTracker() {
                         <CurrentEntryEditor
                             projects={projects}
                             selectedProjectId={selectedProjectId}
-                            onProjectSelect={handleProjectSelect}
-                            onDescriptionChange={(desc) => {
-                                currentEntryDescription = desc;
-                            }}
                             editActiveEntry={editActiveEntry}
                         />
                     </div>
