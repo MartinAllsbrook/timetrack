@@ -253,7 +253,7 @@ export default function TimeTracker() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updates),
             });
-
+    
             if (response.ok) {
                 const updatedEntry = await response.json();
                 
@@ -261,25 +261,32 @@ export default function TimeTracker() {
                 if (updatedEntry.endTime) {
                     updatedEntry.endTime = new Date(updatedEntry.endTime);
                 }
-
-                timeEntries.value = timeEntries.value.map((entry) =>
-                    entry.id === entryId
-                        ? { ...entry, ...updatedEntry }
-                        : entry
-                );
+    
+                timeEntries.value = timeEntries.value.map((entry) => {
+                    if (entry.id === entryId) {
+                        // If projectId changed, find the new project
+                        let updatedProject = entry.project;
+                        if (updates.projectId && updates.projectId !== entry.project.id) {
+                            updatedProject = projects.value.find(p => p.id === updates.projectId) || entry.project;
+                        }
+                        
+                        return {
+                            ...entry,
+                            ...updatedEntry,
+                            project: updatedProject
+                        };
+                    }
+                    return entry;
+                });
             } else {
                 throw new Error("Failed to update time entry");
             }
         } catch (error) {
             console.error("Error updating time entry:", error);
         }
-    }
+    } 
 
     //#endregion
-
-    function handleProjectSelect(projectId: string) {
-        selectedProjectId.value = projectId;
-    }
 
     function editActiveEntry(projectId?: string, description?: string) { // TODO: If we made these optional parameters, we might not need to update both every time?
         if (!activeSession.value) return; 

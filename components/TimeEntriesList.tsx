@@ -7,7 +7,11 @@ interface TimeEntriesListProps {
 }
 
 export default function TimeEntriesList(props: TimeEntriesListProps) {
-    const recentEntries = props.timeEntries.value.slice(0, 10); // Show last 10 entries
+    const recentEntries = props.timeEntries.value
+    .slice(0, 11) // We only need max 11 to filter out active entry if present, idk if this is even efficient tho
+    .filter((entry => !!entry.endTime)) // Filter out active entries
+    .slice(0, 10); // Show last 10 entries
+
     return (
         <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">
