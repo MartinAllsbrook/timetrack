@@ -289,10 +289,10 @@ export default function TimeTracker() {
     //#endregion
 
     function editActiveEntry(projectId?: string, description?: string) { // TODO: If we made these optional parameters, we might not need to update both every time?
-        if (!activeSession.value) return; 
-
         if (projectId) selectedProjectId.value = projectId;
         if (description) currentEntryDescription = description;
+        
+        if (!activeSession.value) return; 
 
         editTimeEntry(activeSession.value.entryId, { 
             projectId, 
