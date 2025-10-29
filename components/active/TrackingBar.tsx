@@ -25,22 +25,23 @@ export function TrackingBar(props: TrackingBarProps) {
     canStart.value = !!props.selectedProject.value && !isTracking.value;
 
     const handleDescriptionChange = (value: string) => {
-        console.log("Description changed to:", value);
-
         props.editActiveEntry(undefined, value);
     };
 
     const handleProjectSelect = (projectId: string) => {
-        console.log("Project selected:", projectId);
-
         props.editActiveEntry(projectId, undefined);
     }
+
+    // Get the current description from the active session
+    const currentDescription = props.selectedProject.value?.activeEntry?.description || "";
 
     return (
         <div class="bg-white rounded-lg border border-gray-200 px-8 py-4 shadow-sm flex items-center">
             <div class="flex-1">
                 <DescriptionTextbox
                     onDescriptionChange={handleDescriptionChange}
+                    currentDescription={currentDescription}
+                    isTracking={isTracking.value}
                 />
             </div>
 

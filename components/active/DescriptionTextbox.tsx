@@ -3,22 +3,40 @@ import { useEffect } from "preact/hooks";
 
 const STORAGE_KEY = "timetrack_current_description";
 
-export function DescriptionTextbox(props: { onDescriptionChange: (value: string) => void; }) {
+export function DescriptionTextbox(props: { 
+    onDescriptionChange: (value: string) => void;
+    currentDescription?: string;
+    isTracking?: boolean;
+}) {
     const description = useSignal("");
     const debounceTimeout = useSignal<number | null>(null);
 
-    // Load saved description on mount
+    // Load saved description on mount and sync with current description
     useEffect(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                description.value = saved;
-
-                // Restore the description to the active entry
-                props.onDescriptionChange(saved);
+        // If there's a current description from an active session, use that
+        if (props.currentDescription !== undefined) {
+            console.log("Using current description from props:", props.currentDescription);
+            description.value = props.currentDescription;
+        } else if (props.isTracking) {
+            // Only restore from localStorage if we're tracking but no current description
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    description.value = saved;
+                    console.log("Restored description from localStorage:", saved);
+                    props.onDescriptionChange(saved);
+                }
+            } catch (error) {
+                console.warn("Failed to load saved description:", error);
             }
-        } catch (error) {
-            console.warn("Failed to load saved description:", error);
+        } else {
+            // Not tracking, clear the description and localStorage
+            description.value = "";
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (error) {
+                console.warn("Failed to clear saved description:", error);
+            }
         }
         
         // Cleanup timeout on unmount
@@ -27,7 +45,7 @@ export function DescriptionTextbox(props: { onDescriptionChange: (value: string)
                 clearTimeout(debounceTimeout.value);
             }
         };
-    }, []);
+    }, [props.currentDescription, props.isTracking]);
 
 
     const handleDescriptionChange = (value: string) => {
@@ -42,16 +60,17 @@ export function DescriptionTextbox(props: { onDescriptionChange: (value: string)
         debounceTimeout.value = setTimeout(() => {
             props.onDescriptionChange(value);
 
-            // Save to localStorage
-            // Should we do this only on successful save of the entry or more frequently. This keeps it synced with the DB so it might cause less unexpected behavior
-            try {
-                if (value.trim()) {
-                    localStorage.setItem(STORAGE_KEY, value);
-                } else {
-                    localStorage.removeItem(STORAGE_KEY);
+            // Save to localStorage only when tracking
+            if (props.isTracking) {
+                try {
+                    if (value.trim()) {
+                        localStorage.setItem(STORAGE_KEY, value);
+                    } else {
+                        localStorage.removeItem(STORAGE_KEY);
+                    }
+                } catch (error) {
+                    console.warn("Failed to save description:", error);
                 }
-            } catch (error) {
-                console.warn("Failed to save description:", error);
             }
         }, 750); // TODO: I wonder if there's like a cool way to adjust this dynamically... 
     
