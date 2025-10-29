@@ -318,7 +318,6 @@ export default function TimeTracker() {
 
 
     return (
-
         <div class="max-w-6xl mx-auto space-y-6">
             {/* Header */}
             <div class="text-center">
@@ -391,8 +390,14 @@ export default function TimeTracker() {
                 </div>
             </div>
 
-            {/* <EntryModal 
-            /> */}
+            {/* Dummy TimeEntry data for EntryModal */}
+            {/* {timeEntries.value[0] && <EntryModal 
+                isOpen
+                entry={timeEntries.value[0]} // This can now be undefined safely
+                onClose={ () => {} }
+                onUpdate={ async (_id: string, _updates: UpdateTimeEntryRequest) => {} }
+                projects={projects.value}
+            />} */}
 
             {/* Create Project Modal */}
             <CreateProjectModal
