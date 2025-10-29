@@ -34,7 +34,7 @@ export function StartStopButton(props: {
                 }
             `}
             title={started.value ? 
-                (isLoading.value ? "Stop" : "Stoping...") : 
+                (isLoading.value ? "Stop" : "Stopping...") : 
                 (isLoading.value ? "Start" : "Starting...")
             }
         >

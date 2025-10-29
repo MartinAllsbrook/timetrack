@@ -46,7 +46,7 @@ export function ProjectSelect(props: ProjectSelectProps) {
             {isOpen.value && (
                 <div class="absolute z-10 right-0 w-80 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                     {props.projects.value.length === 0 ? (
-                        <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                        <div class="text-sm text-gray-500 text-center">
                             No projects available
                         </div>
                     ) : (
@@ -55,7 +55,7 @@ export function ProjectSelect(props: ProjectSelectProps) {
                                 key={project.id}
                                 type="button"
                                 onClick={() => handleProjectSelect(project.id)}
-                                class={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
+                                class={`w-full text-left hover:bg-gray-50 transition-colors ${
                                     props.selectedProjectId.value === project.id
                                         ? "bg-blue-50 text-blue-900"
                                         : "text-gray-900"

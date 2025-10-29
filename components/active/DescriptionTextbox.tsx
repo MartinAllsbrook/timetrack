@@ -63,7 +63,7 @@ export function DescriptionTextbox(props: { onDescriptionChange: (value: string)
                     value={description.value}
                     onInput={(e) => handleDescriptionChange((e.target as HTMLTextAreaElement).value)}
                     placeholder="What are you working on?"
-                    class="w-full px-3 py-2 border-none text-xl font-bold placeholder-gray-400 focus:outline-none resize-none"
+                    class="w-full border-none text-xl font-bold placeholder-gray-400 focus:outline-none resize-none"
                     rows={1}
                     aria-label="Task description"
                     role="textbox"

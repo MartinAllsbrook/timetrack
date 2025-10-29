@@ -37,7 +37,7 @@ export function TrackingBar(props: TrackingBarProps) {
     }
 
     return (
-        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex items-center">
+        <div class="bg-white rounded-lg border border-gray-200 px-8 py-4 shadow-sm flex items-center">
             <div class="flex-1">
                 <DescriptionTextbox
                     onDescriptionChange={handleDescriptionChange}
