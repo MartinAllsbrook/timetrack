@@ -13,6 +13,7 @@ import ProjectEditor from "components/ProjectEditor.tsx";
 import EditProjectModal from "components/EditProjectModal.tsx";
 import Timeline from "components/timeline/Timeline.tsx";
 import { TrackingBar } from "components/active/TrackingBar.tsx";
+import { EntryModal } from "components/entries/EntryModal.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -390,7 +391,8 @@ export default function TimeTracker() {
                 </div>
             </div>
 
-
+            {/* <EntryModal 
+            /> */}
 
             {/* Create Project Modal */}
             <CreateProjectModal
