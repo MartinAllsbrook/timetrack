@@ -37,7 +37,7 @@ export function TrackingBar(props: TrackingBarProps) {
     }
 
     return (
-        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex">
+        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex items-center">
             <div class="flex-1">
                 <DescriptionTextbox
                     onDescriptionChange={handleDescriptionChange}
@@ -52,6 +52,15 @@ export function TrackingBar(props: TrackingBarProps) {
                 />
             </div>
 
+
+
+            <div class="flex-shrink-0 ml-4 flex items-center">
+                <Timer
+                    activeSession={props.activeSession}
+                    selectedProject={props.selectedProject}
+                />
+            </div>
+
             <div class="flex-shrink-0 ml-4 flex items-center">
                 <StartStopButton
                     started={isTracking}
@@ -59,13 +68,6 @@ export function TrackingBar(props: TrackingBarProps) {
                     onStop={props.onStop}
                     canStart={canStart}
                     isLoading={props.isLoading}
-                />
-            </div>
-
-            <div class="flex-shrink-0 ml-4 flex items-center">
-                <Timer
-                    activeSession={props.activeSession}
-                    selectedProject={props.selectedProject}
                 />
             </div>
         </div>

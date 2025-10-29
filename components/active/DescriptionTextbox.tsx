@@ -58,7 +58,7 @@ export function DescriptionTextbox(props: { onDescriptionChange: (value: string)
     };
 
     return (
-        <>
+        <div class="relative flex">
             <textarea
                     value={description.value}
                     onInput={(e) => handleDescriptionChange((e.target as HTMLTextAreaElement).value)}
@@ -74,6 +74,6 @@ export function DescriptionTextbox(props: { onDescriptionChange: (value: string)
             {/* <span id="description-help" class="sr-only">
                 Enter a description of the task you're currently working on. This field is optional.
             </span> */}
-        </>
+        </div>
     );
 }

@@ -22,14 +22,14 @@ export function StartStopButton(props: {
             type="button"
             onClick={handleClick}
             className={`
-                w-20 h-8 rounded-lg cursor-pointer 
-                text-sm font-bold text-white
+                w-20 h-8 rounded-lg cursor-pointer bg-white border-2
+                text-sm font-bold
                 transition-colors duration-200 ease-in-out
                 ${((!canStart.value && !started.value) || isLoading.value) ?
-                    "bg-gray-400 cursor-not-allowed" :
+                    "text-gray-400 border-gray-400 cursor-not-allowed" :
                     (started.value ? 
-                        "bg-red-600 hover:bg-red-700" : 
-                        "bg-green-600 hover:bg-green-700"
+                        "text-red-600 border-red-600 hover:bg-red-50" : 
+                        "text-green-600 border-green-600 hover:bg-green-50"
                     )
                 }
             `}

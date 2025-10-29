@@ -36,7 +36,7 @@ export default function Timer(props: TimerProps) {
             {/* Timer Display */}
             <div class="space-y-2">
                 <div
-                    class={`text-4xl font-mono font-bold timer-display ${
+                    class={`text-2xl font-mono font-bold timer-display ${
                         isTracking.value ? "text-green-600" : "text-gray-400"
                     }`}
                 >
