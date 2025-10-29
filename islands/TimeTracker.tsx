@@ -7,13 +7,12 @@ import type {
     TimeEntryWithProject,
     UpdateTimeEntryRequest,
 } from "src/types.ts";
-import Timer from "components/active/Timer.tsx";
 import TimeEntriesList from "components/TimeEntriesList.tsx";
 import CreateProjectModal from "components/CreateProjectModal.tsx";
-import { CurrentEntryEditor } from "components/active/CurrentEntryEditor.tsx";
 import ProjectEditor from "components/ProjectEditor.tsx";
 import EditProjectModal from "components/EditProjectModal.tsx";
 import Timeline from "components/timeline/Timeline.tsx";
+import { TrackingBar } from "components/active/TrackingBar.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -330,26 +329,52 @@ export default function TimeTracker() {
                 </p>
             </div>
 
+            <TrackingBar 
+                projects={projects}
+                selectedProjectId={selectedProjectId}
+                editActiveEntry={editActiveEntry}
+                activeSession={activeSession}
+                selectedProject={selectedProject}
+                onStart={startTracking}
+                onStop={stopTracking}
+                isLoading={isLoading}
+            />
+
+            <div>
+                <Timeline
+                    date={new Date()}
+                    timeEntries={timeEntries.value}
+                />
+            </div>
+
             {/* Main Content Grid */}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div class="space-y-6">
-                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                    {/* <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
                         <CurrentEntryEditor
                             projects={projects}
                             selectedProjectId={selectedProjectId}
                             editActiveEntry={editActiveEntry}
                         />
-                    </div>
+                    </div> */}
 
                     {/* Timer */}
-                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                    {/* <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
                         <Timer
                             activeSession={activeSession}
                             selectedProject={selectedProject}
                             onStart={startTracking}
                             onStop={stopTracking}
                             isLoading={isLoading}
+                        />
+                    </div> */}
+                    {/* Project Selector */}
+                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                        <ProjectEditor
+                            projects={projects}
+                            onCreateProject={openCreateModal}
+                            onProjectEdit={openEditModal}
                         />
                     </div>
                 </div>
@@ -361,23 +386,11 @@ export default function TimeTracker() {
                         onDeleteEntry={deleteTimeEntry}
                     />
 
-                    {/* Project Selector */}
-                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <ProjectEditor
-                            projects={projects}
-                            onCreateProject={openCreateModal}
-                            onProjectEdit={openEditModal}
-                        />
-                    </div>
+                    
                 </div>
             </div>
 
-            <div>
-                <Timeline
-                    date={new Date()}
-                    timeEntries={timeEntries.value}
-                />
-            </div>
+
 
             {/* Create Project Modal */}
             <CreateProjectModal

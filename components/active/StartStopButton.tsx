@@ -22,7 +22,7 @@ export function StartStopButton(props: {
             type="button"
             onClick={handleClick}
             className={`
-                w-20 h-20 rounded-lg cursor-pointer 
+                w-20 h-8 rounded-lg cursor-pointer 
                 text-sm font-bold text-white
                 transition-colors duration-200 ease-in-out
                 ${((!canStart.value && !started.value) || isLoading.value) ?

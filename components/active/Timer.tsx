@@ -1,18 +1,14 @@
 import { useSignal, useSignalEffect, type Signal } from "@preact/signals";
 import type { ActiveSession, ProjectWithStats } from "src/types.ts";
-import { StartStopButton } from "./StartStopButton.tsx";
 
 interface TimerProps {
     activeSession: Signal<ActiveSession | null>;
     selectedProject: Signal<ProjectWithStats | null>;
-    onStart: () => void;
-    onStop: () => void;
-    isLoading: Signal<boolean>;
 }
 
 export default function Timer(props: TimerProps) {
     const isTracking = useSignal(false);
-    const canStart = useSignal(false);
+    // const canStart = useSignal(false);
 
     const currentTime = new Date().getTime();
     const startTime = props.activeSession.value?.startTime 
@@ -33,54 +29,28 @@ export default function Timer(props: TimerProps) {
     });
 
     isTracking.value = !!props.activeSession.value;
-    canStart.value = !!props.selectedProject.value && !isTracking.value;
+    // canStart.value = !!props.selectedProject.value && !isTracking.value;
     
     return (
         <div class="text-center space-y-4">
-                {/* Timer Display */}
-                <div class="space-y-2">
-                    <div
-                        class={`text-4xl font-mono font-bold timer-display ${
-                            isTracking.value ? "text-green-600" : "text-gray-400"
-                        }`}
-                    >
-                        {formatTime(isTracking.value ? elapsed : 0)}
-                    </div>
-                    {isTracking.value && props.selectedProject.value && (
-                        <div class="flex items-center justify-center space-x-2 status-active">
-                            <div
-                                class="w-3 h-3 rounded-full"
-                                style={{
-                                    backgroundColor:
-                                        props.selectedProject.value.color,
-                                }}
-                            >
-                            </div>
-                            <span class="text-lg font-medium text-gray-800">
-                                {props.selectedProject.value.name}
-                            </span>
-                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse">
-                            </div>
-                        </div>
-                    )}
+            {/* Timer Display */}
+            <div class="space-y-2">
+                <div
+                    class={`text-4xl font-mono font-bold timer-display ${
+                        isTracking.value ? "text-green-600" : "text-gray-400"
+                    }`}
+                >
+                    {formatTime(isTracking.value ? elapsed : 0)}
                 </div>
-
-                {/* Control Buttons */}
-                <StartStopButton
-                    started={isTracking}
-                    onStart={props.onStart}
-                    onStop={props.onStop}
-                    canStart={canStart}
-                    isLoading={props.isLoading}
-                />
-
-                {/* Status Message */}
-                {!props.selectedProject.value && !isTracking.value && (
-                    <p class="text-gray-500 text-sm">
-                        Select a project to start tracking time
-                    </p>
-                )}
             </div>
+
+            {/* Status Message */}
+            {/* {!props.selectedProject.value && !isTracking.value && (
+                <p class="text-gray-500 text-sm">
+                    Select a project to start tracking time
+                </p>
+            )} */}
+        </div>  
     );
 }
 
