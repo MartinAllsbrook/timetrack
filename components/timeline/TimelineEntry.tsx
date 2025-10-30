@@ -1,16 +1,14 @@
-import { TimeEntry, Project } from "../../src/types.ts";
+import { TimeEntryWithProject } from "../../src/types.ts";
 
 interface TimelineEntryProps {
-    timeEntry: TimeEntry;
-    project: Project;
+    timeEntry: TimeEntryWithProject;
     startOfDay: Date;
     endOfDay: Date;
-    onEntryClick?: (entry: TimeEntry) => void;
+    onEntryClick?: (entry: TimeEntryWithProject) => void;
 }
 
 export default function TimelineEntry({ 
     timeEntry, 
-    project, 
     startOfDay, 
     endOfDay,
     onEntryClick 
@@ -52,15 +50,15 @@ export default function TimelineEntry({
             style={{
                 left: `${leftPercent}%`,
                 width: `${widthPercent}%`,
-                backgroundColor: project.color || '#3B82F6',
+                backgroundColor: timeEntry.project.color || '#3B82F6',
                 textShadow: '0 1px 2px rgba(0,0,0,0.5)'
             }}
             onClick={() => onEntryClick?.(timeEntry)}
-            title={`${project.name}\n${formatTime(timeEntry.startTime)} - ${timeEntry.endTime ? formatTime(timeEntry.endTime) : 'Active'}\n${formatDuration(entryDuration)}${timeEntry.description ? `\n${timeEntry.description}` : ''}`}
+            title={`${timeEntry.project.name}\n${formatTime(timeEntry.startTime)} - ${timeEntry.endTime ? formatTime(timeEntry.endTime) : 'Active'}\n${formatDuration(entryDuration)}${timeEntry.description ? `\n${timeEntry.description}` : ''}`}
         >
             {widthPercent > 15 && (
                 <span className="overflow-hidden text-ellipsis whitespace-nowrap px-1">
-                    {project.name}
+                    {timeEntry.project.name}
                 </span>
             )}
             {isActive && (

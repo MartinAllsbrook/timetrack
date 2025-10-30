@@ -29,6 +29,9 @@ export default function TimeTracker() {
     /** A description of the current task / entry being tracked */
     let currentEntryDescription: string | undefined = undefined; 
 
+    const entryModalOpen = useSignal(false);
+    const entryToEdit = useSignal<TimeEntryWithProject | null>(null);
+
 
     // Load initial data
     useEffect(() => {
@@ -316,6 +319,15 @@ export default function TimeTracker() {
         projectToEditId.value = null;
     }
 
+    function openEntryModal(entry: TimeEntryWithProject) {
+        entryToEdit.value = entry;
+        entryModalOpen.value = true;
+    }
+
+    function closeEntryModal() {
+        entryToEdit.value = null;
+        entryModalOpen.value = false;
+    }
 
     return (
         <div class="max-w-6xl mx-auto space-y-6">
@@ -344,6 +356,7 @@ export default function TimeTracker() {
                 <Timeline
                     date={new Date()}
                     timeEntries={timeEntries.value}
+                    onEntryClick={openEntryModal}
                 />
             </div>
 
@@ -391,13 +404,13 @@ export default function TimeTracker() {
             </div>
 
             {/* Dummy TimeEntry data for EntryModal */}
-            {/* {timeEntries.value[0] && <EntryModal 
-                isOpen
-                entry={timeEntries.value[0]} // This can now be undefined safely
-                onClose={ () => {} }
-                onUpdate={ async (_id: string, _updates: UpdateTimeEntryRequest) => {} }
+            {entryToEdit.value && <EntryModal 
+                isOpen={entryModalOpen.value} // Do we need this?
+                entry={entryToEdit.value}
+                onClose={closeEntryModal}
+                onUpdate={editTimeEntry}
                 projects={projects.value}
-            />} */}
+            />}
 
             {/* Create Project Modal */}
             <CreateProjectModal

@@ -1,9 +1,9 @@
 import { useState } from "preact/hooks";
-import { TimeEntry, Project, UpdateTimeEntryRequest } from "../../src/types.ts";
+import { Project, UpdateTimeEntryRequest, TimeEntryWithProject } from "../../src/types.ts";
 
 interface EntryModalProps {
     isOpen: boolean;
-    entry: TimeEntry;
+    entry: TimeEntryWithProject;
     projects: Project[];
     onClose: () => void;
     onUpdate: (id: string, updates: UpdateTimeEntryRequest) => Promise<void>;
@@ -12,12 +12,18 @@ interface EntryModalProps {
 export function EntryModal(props: EntryModalProps) {
     const [description, setDescription] = useState(props.entry.description || "");
     const [projectId, setProjectId] = useState(props.entry.projectId);
-    const [startTime, setStartTime] = useState(
-        props.entry.startTime ? new Date(props.entry.startTime).toISOString().slice(0, 16) : ""
-    );
-    const [endTime, setEndTime] = useState(
-        props.entry.endTime ? new Date(props.entry.endTime).toISOString().slice(0, 16) : ""
-    );
+    
+    // Helper function to convert UTC date to local datetime-local format
+    const formatDateForInput = (date: Date | null) => {
+        if (!date) return "";
+        const localDate = new Date(date);
+        // Adjust for timezone offset to get local time
+        localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+        return localDate.toISOString().slice(0, 16);
+    };
+    
+    const [startTime, setStartTime] = useState(formatDateForInput(props.entry.startTime));
+    const [endTime, setEndTime] = useState(formatDateForInput(props.entry.endTime));
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const selectedProject = props.projects.find(p => p.id === projectId);
@@ -38,11 +44,11 @@ export function EntryModal(props: EntryModalProps) {
                 updates.projectId = projectId;
             }
             
-            if (startTime && new Date(startTime).getTime() !== new Date(props.entry.startTime).getTime()) {
+            if (startTime && formatDateForInput(props.entry.startTime) !== startTime) {
                 updates.startTime = new Date(startTime);
             }
             
-            if (endTime && (!props.entry.endTime || new Date(endTime).getTime() !== new Date(props.entry.endTime).getTime())) {
+            if (endTime && formatDateForInput(props.entry.endTime) !== endTime) {
                 updates.endTime = new Date(endTime);
             }
             

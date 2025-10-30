@@ -1,10 +1,10 @@
-import { TimeEntry, TimeEntryWithProject } from "../../src/types.ts";
+import { TimeEntryWithProject } from "../../src/types.ts";
 import TimelineEntry from "./TimelineEntry.tsx";
 
 interface TimelineProps {
     timeEntries: TimeEntryWithProject[];
     date: Date;
-    onEntryClick?: (entry: TimeEntry) => void;
+    onEntryClick?: (entry: TimeEntryWithProject) => void;
     className?: string;
 }
 
@@ -95,7 +95,6 @@ export default function Timeline({
                         <TimelineEntry
                             key={entry.id}
                             timeEntry={entry}
-                            project={entry.project}
                             startOfDay={startOfDay}
                             endOfDay={endOfDay}
                             onEntryClick={onEntryClick}
