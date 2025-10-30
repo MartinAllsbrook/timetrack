@@ -77,6 +77,12 @@ export default function TimeTracker() {
                     if (entry.endTime) {
                         entry.endTime = new Date(entry.endTime);
                     }
+                    if (entry.createdAt) {
+                        entry.createdAt = new Date(entry.createdAt);
+                    }
+                    if (entry.updatedAt) {
+                        entry.updatedAt = new Date(entry.updatedAt);
+                    }
                 }
 
                 timeEntries.value = entriesData;
@@ -260,17 +266,26 @@ export default function TimeTracker() {
             if (response.ok) {
                 const updatedEntry = await response.json();
                 
-                updatedEntry.startTime = new Date(updatedEntry.startTime);
+                // Convert date strings to Date objects once
+                if (updatedEntry.startTime) {
+                    updatedEntry.startTime = new Date(updatedEntry.startTime);
+                }
                 if (updatedEntry.endTime) {
                     updatedEntry.endTime = new Date(updatedEntry.endTime);
+                }
+                if (updatedEntry.createdAt) {
+                    updatedEntry.createdAt = new Date(updatedEntry.createdAt);
+                }
+                if (updatedEntry.updatedAt) {
+                    updatedEntry.updatedAt = new Date(updatedEntry.updatedAt);
                 }
     
                 timeEntries.value = timeEntries.value.map((entry) => {
                     if (entry.id === entryId) {
                         // If projectId changed, find the new project
                         let updatedProject = entry.project;
-                        if (updates.projectId && updates.projectId !== entry.project.id) {
-                            updatedProject = projects.value.find(p => p.id === updates.projectId) || entry.project;
+                        if (updatedEntry.projectId && updatedEntry.projectId !== entry.project.id) {
+                            updatedProject = projects.value.find(p => p.id === updatedEntry.projectId) || entry.project;
                         }
                         
                         return {

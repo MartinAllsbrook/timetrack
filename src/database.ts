@@ -44,7 +44,16 @@ class DatabaseService {
 
     async getProject(id: string): Promise<Project | null> {
         const result = await this.kv.get<Project>(["projects", id]);
-        return result.value;
+        if (!result.value) {
+            return null;
+        }
+        
+        const project = result.value;
+        // Convert date strings back to Date objects
+        project.createdAt = new Date(project.createdAt);
+        project.updatedAt = new Date(project.updatedAt);
+        
+        return project;
     }
 
     async getAllProjects(): Promise<Project[]> {
@@ -52,7 +61,12 @@ class DatabaseService {
         const iter = this.kv.list<Project>({ prefix: ["projects"] });
 
         for await (const entry of iter) {
-            projects.push(entry.value);
+            const project = entry.value;
+            // Convert date strings back to Date objects
+            project.createdAt = new Date(project.createdAt);
+            project.updatedAt = new Date(project.updatedAt);
+            
+            projects.push(project);
         }
 
         return projects.sort((a, b) => a.name.localeCompare(b.name));
@@ -152,7 +166,20 @@ class DatabaseService {
 
     async getTimeEntry(id: string): Promise<TimeEntry | null> {
         const result = await this.kv.get<TimeEntry>(["timeEntries", id]);
-        return result.value;
+        if (!result.value) {
+            return null;
+        }
+        
+        const timeEntry = result.value;
+        // Convert date strings back to Date objects
+        timeEntry.startTime = new Date(timeEntry.startTime);
+        if (timeEntry.endTime) {
+            timeEntry.endTime = new Date(timeEntry.endTime);
+        }
+        timeEntry.createdAt = new Date(timeEntry.createdAt);
+        timeEntry.updatedAt = new Date(timeEntry.updatedAt);
+        
+        return timeEntry;
     }
 
     async getAllTimeEntries(): Promise<TimeEntry[]> {
@@ -160,7 +187,16 @@ class DatabaseService {
         const iter = this.kv.list<TimeEntry>({ prefix: ["timeEntries"] });
 
         for await (const entry of iter) {
-            entries.push(entry.value);
+            const timeEntry = entry.value;
+            // Convert date strings back to Date objects
+            timeEntry.startTime = new Date(timeEntry.startTime);
+            if (timeEntry.endTime) {
+                timeEntry.endTime = new Date(timeEntry.endTime);
+            }
+            timeEntry.createdAt = new Date(timeEntry.createdAt);
+            timeEntry.updatedAt = new Date(timeEntry.updatedAt);
+            
+            entries.push(timeEntry);
         }
 
         return entries.sort((a, b) =>
