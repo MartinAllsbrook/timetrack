@@ -77,16 +77,16 @@ export const dateUtils = {
     // Convert ISO string to Date object for calculations
     toDate: (isoString: string): Date => new Date(isoString),
     
-    // Format duration between two ISO strings (in milliseconds)
-    formatDuration: (startTime: string, endTime: string | null = null): number => {
+    // Get duration between two ISO strings (in milliseconds)
+    getDurationMs: (startTime: string, endTime: string | null = null): number => {
         const start = new Date(startTime);
         const end = endTime ? new Date(endTime) : new Date();
         return end.getTime() - start.getTime();
     },
     
     // Format duration as human readable string
-    formatDurationString: (startTime: string, endTime: string | null = null): string => {
-        const ms = dateUtils.formatDuration(startTime, endTime);
+    getDurationString: (startTime: string, endTime: string | null = null): string => {
+        const ms = dateUtils.getDurationMs(startTime, endTime);
         const hours = Math.floor(ms / (1000 * 60 * 60));
         const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((ms % (1000 * 60)) / 1000);

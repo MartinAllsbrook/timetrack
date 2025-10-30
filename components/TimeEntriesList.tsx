@@ -72,10 +72,10 @@ export default function TimeEntriesList(props: TimeEntriesListProps) {
                                         <div class="font-medium text-gray-900">
                                             {entry.endTime
                                                 ? formatDuration(
-                                                    dateUtils.formatDuration(entry.startTime, entry.endTime),
+                                                    dateUtils.getDurationMs(entry.startTime, entry.endTime),
                                                 )
                                                 : formatDuration(
-                                                    dateUtils.formatDuration(entry.startTime),
+                                                    dateUtils.getDurationMs(entry.startTime),
                                                 )}
                                         </div>
                                         {!entry.endTime && (

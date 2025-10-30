@@ -71,7 +71,7 @@ class DatabaseService {
             const entries = await this.getTimeEntriesByProject(project.id);
             const totalTime = entries.reduce((sum, entry) => {
                 if (entry.endTime) {
-                    return sum + dateUtils.formatDuration(entry.startTime, entry.endTime);
+                    return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
                 }
                 return sum;
             }, 0);
@@ -303,7 +303,7 @@ class DatabaseService {
         );
 
         return todayEntries.reduce((sum, entry) => {
-            return sum + dateUtils.formatDuration(entry.startTime, entry.endTime);
+            return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
         }, 0);
     }
 
@@ -316,7 +316,7 @@ class DatabaseService {
         );
 
         return weekEntries.reduce((sum, entry) => {
-            return sum + dateUtils.formatDuration(entry.startTime, entry.endTime);
+            return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
         }, 0);
     }
 }

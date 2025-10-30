@@ -73,7 +73,7 @@ export function EntryModal(props: EntryModalProps) {
 
     const formatDuration = () => {
         if (!props.entry.endTime) return "Currently tracking";
-        const duration = dateUtils.formatDuration(props.entry.startTime, props.entry.endTime);
+        const duration = dateUtils.getDurationMs(props.entry.startTime, props.entry.endTime);
         const hours = Math.floor(duration / (1000 * 60 * 60));
         const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
         return `${hours}h ${minutes}m`;
