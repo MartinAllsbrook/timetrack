@@ -188,7 +188,7 @@ export default function TimeTracker() {
                 activeSession.value = {
                     entryId: newEntry.id,
                     projectId: newEntry.projectId,
-                    startTime: new Date(newEntry.startTime),
+                    startTime: newEntry.startTime,
                 };
 
                 // Reload data to get updated projects and entries

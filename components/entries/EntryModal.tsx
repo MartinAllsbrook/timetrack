@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Project, UpdateTimeEntryRequest, TimeEntryWithProject } from "../../src/types.ts";
+import { Project, UpdateTimeEntryRequest, TimeEntryWithProject, dateUtils } from "../../src/types.ts";
 
 interface EntryModalProps {
     isOpen: boolean;
@@ -13,10 +13,10 @@ export function EntryModal(props: EntryModalProps) {
     const [description, setDescription] = useState(props.entry.description || "");
     const [projectId, setProjectId] = useState(props.entry.projectId);
     
-    // Helper function to convert UTC date to local datetime-local format
-    const formatDateForInput = (date: Date | null) => {
-        if (!date) return "";
-        const localDate = new Date(date);
+    // Helper function to convert ISO string to local datetime-local format
+    const formatDateForInput = (dateString: string | null) => {
+        if (!dateString) return "";
+        const localDate = dateUtils.toDate(dateString);
         // Adjust for timezone offset to get local time
         localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
         return localDate.toISOString().slice(0, 16);
@@ -45,11 +45,11 @@ export function EntryModal(props: EntryModalProps) {
             }
             
             if (startTime && formatDateForInput(props.entry.startTime) !== startTime) {
-                updates.startTime = new Date(startTime);
+                updates.startTime = new Date(startTime).toISOString();
             }
             
             if (endTime && formatDateForInput(props.entry.endTime) !== endTime) {
-                updates.endTime = new Date(endTime);
+                updates.endTime = new Date(endTime).toISOString();
             }
             
             // If endTime was cleared (from having a value to empty)
@@ -66,16 +66,14 @@ export function EntryModal(props: EntryModalProps) {
         }
     };
 
-    const formatDateTime = (date: Date | null) => {
-        if (!date) return "Not set";
-        return new Date(date).toLocaleString();
+    const formatDateTime = (dateString: string | null) => {
+        if (!dateString) return "Not set";
+        return dateUtils.toDate(dateString).toLocaleString();
     };
 
     const formatDuration = () => {
         if (!props.entry.endTime) return "Currently tracking";
-        const start = new Date(props.entry.startTime);
-        const end = new Date(props.entry.endTime);
-        const duration = end.getTime() - start.getTime();
+        const duration = dateUtils.formatDuration(props.entry.startTime, props.entry.endTime);
         const hours = Math.floor(duration / (1000 * 60 * 60));
         const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
         return `${hours}h ${minutes}m`;

@@ -1,4 +1,4 @@
-import { TimeEntryWithProject } from "../../src/types.ts";
+import { TimeEntryWithProject, dateUtils } from "../../src/types.ts";
 
 interface TimelineEntryProps {
     timeEntry: TimeEntryWithProject;
@@ -14,9 +14,9 @@ export default function TimelineEntry({
     onEntryClick 
 }: TimelineEntryProps) {
     const dayDuration = endOfDay.getTime() - startOfDay.getTime();
-    const entryStart = Math.max(timeEntry.startTime.getTime(), startOfDay.getTime());
+    const entryStart = Math.max(dateUtils.toDate(timeEntry.startTime).getTime(), startOfDay.getTime());
     const entryEnd = timeEntry.endTime 
-        ? Math.min(timeEntry.endTime.getTime(), endOfDay.getTime())
+        ? Math.min(dateUtils.toDate(timeEntry.endTime).getTime(), endOfDay.getTime())
         : Math.min(Date.now(), endOfDay.getTime()); // If still running, show until now or end of day
     
     const entryDuration = entryEnd - entryStart;
@@ -28,8 +28,8 @@ export default function TimelineEntry({
     
     const isActive = !timeEntry.endTime; // TODO: We've kindof already calculated this above but idk if it's that important
     
-    const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('en-US', { 
+    const formatTime = (dateString: string) => {
+        return dateUtils.toDate(dateString).toLocaleTimeString('en-US', { 
             hour: '2-digit', 
             minute: '2-digit',
             hour12: false 

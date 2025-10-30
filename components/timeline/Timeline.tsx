@@ -1,4 +1,4 @@
-import { TimeEntryWithProject } from "../../src/types.ts";
+import { TimeEntryWithProject, dateUtils } from "../../src/types.ts";
 import TimelineEntry from "./TimelineEntry.tsx";
 
 interface TimelineProps {
@@ -24,7 +24,7 @@ export default function Timeline({
     // TODO: I think eventually we will only want to querry the part of the DB that the timeline is showing but we should still filter here to make sure
     // Filter entries for this day
     const dayEntries = timeEntries.filter(entry => {
-        const entryDate = new Date(entry.startTime);
+        const entryDate = dateUtils.toDate(entry.startTime);
         return entryDate.toDateString() === date.toDateString();
     });
 
@@ -41,9 +41,9 @@ export default function Timeline({
      */
     const getTotalDuration = () => {
         const total = dayEntries.reduce((acc, entry) => {
-            const start = Math.max(entry.startTime.getTime(), startOfDay.getTime());
+            const start = Math.max(dateUtils.toDate(entry.startTime).getTime(), startOfDay.getTime());
             const end = entry.endTime 
-                ? Math.min(entry.endTime.getTime(), endOfDay.getTime())
+                ? Math.min(dateUtils.toDate(entry.endTime).getTime(), endOfDay.getTime())
                 : Date.now();
             return acc + (end - start);
         }, 0);

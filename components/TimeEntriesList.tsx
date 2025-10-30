@@ -1,5 +1,6 @@
 import type { Signal } from "@preact/signals";
 import type { TimeEntryWithProject } from "../src/types.ts";
+import { dateUtils } from "../src/types.ts";
 
 interface TimeEntriesListProps {
     timeEntries: Signal<TimeEntryWithProject[]>;
@@ -71,12 +72,10 @@ export default function TimeEntriesList(props: TimeEntriesListProps) {
                                         <div class="font-medium text-gray-900">
                                             {entry.endTime
                                                 ? formatDuration(
-                                                    entry.endTime.getTime() -
-                                                    entry.startTime.getTime(),
+                                                    dateUtils.formatDuration(entry.startTime, entry.endTime),
                                                 )
                                                 : formatDuration(
-                                                    new Date().getTime() -
-                                                    entry.startTime.getTime(),
+                                                    dateUtils.formatDuration(entry.startTime),
                                                 )}
                                         </div>
                                         {!entry.endTime && (
@@ -115,7 +114,8 @@ export default function TimeEntriesList(props: TimeEntriesListProps) {
     );
 }
 
-function formatDate(date: Date): string {
+function formatDate(dateString: string): string {
+    const date = dateUtils.toDate(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -138,7 +138,9 @@ function formatDate(date: Date): string {
     }
 }
 
-function formatTimeRange(start: Date, end: Date): string {
+function formatTimeRange(startString: string, endString: string): string {
+    const start = dateUtils.toDate(startString);
+    const end = dateUtils.toDate(endString);
     return `${
         start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     } - ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;

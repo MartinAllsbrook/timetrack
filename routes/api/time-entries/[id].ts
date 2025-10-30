@@ -41,11 +41,6 @@ export const handler = define.handlers({
             const { id } = ctx.params;
             const body = await ctx.req.json() as UpdateTimeEntryRequest;
 
-            // Convert endTime string to Date if provided
-            if (body.endTime && typeof body.endTime === "string") {
-                body.endTime = new Date(body.endTime);
-            }
-
             const db = await getDatabase();
             const timeEntry = await db.updateTimeEntry(id, body);
 

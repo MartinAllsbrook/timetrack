@@ -1,5 +1,6 @@
 import { useSignal, useSignalEffect, type Signal } from "@preact/signals";
 import type { ActiveSession, ProjectWithStats } from "src/types.ts";
+import { dateUtils } from "../../src/types.ts";
 
 interface TimerProps {
     activeSession: Signal<ActiveSession | null>;
@@ -12,7 +13,7 @@ export default function Timer(props: TimerProps) {
 
     const currentTime = new Date().getTime();
     const startTime = props.activeSession.value?.startTime 
-        ? props.activeSession.value.startTime.getTime()
+        ? dateUtils.toDate(props.activeSession.value.startTime).getTime()
         : currentTime;
     const elapsed = currentTime - startTime;
 

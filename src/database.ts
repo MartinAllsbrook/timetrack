@@ -11,6 +11,7 @@ import type {
     UpdateProjectRequest,
     UpdateTimeEntryRequest,
 } from "./types.ts";
+import { dateUtils } from "./types.ts";
 
 class DatabaseService {
     private kv: Deno.Kv;
@@ -23,7 +24,7 @@ class DatabaseService {
 
     async createProject(data: CreateProjectRequest): Promise<Project> {
         const id = crypto.randomUUID();
-        const now = new Date();
+        const now = dateUtils.now();
 
         const project: Project = {
             id,
@@ -48,12 +49,7 @@ class DatabaseService {
             return null;
         }
         
-        const project = result.value;
-        // Convert date strings back to Date objects
-        project.createdAt = new Date(project.createdAt);
-        project.updatedAt = new Date(project.updatedAt);
-        
-        return project;
+        return result.value;
     }
 
     async getAllProjects(): Promise<Project[]> {
@@ -61,12 +57,7 @@ class DatabaseService {
         const iter = this.kv.list<Project>({ prefix: ["projects"] });
 
         for await (const entry of iter) {
-            const project = entry.value;
-            // Convert date strings back to Date objects
-            project.createdAt = new Date(project.createdAt);
-            project.updatedAt = new Date(project.updatedAt);
-            
-            projects.push(project);
+            projects.push(entry.value);
         }
 
         return projects.sort((a, b) => a.name.localeCompare(b.name));
@@ -80,8 +71,7 @@ class DatabaseService {
             const entries = await this.getTimeEntriesByProject(project.id);
             const totalTime = entries.reduce((sum, entry) => {
                 if (entry.endTime) {
-                    return sum +
-                        (entry.endTime.getTime() - entry.startTime.getTime());
+                    return sum + dateUtils.formatDuration(entry.startTime, entry.endTime);
                 }
                 return sum;
             }, 0);
@@ -110,7 +100,7 @@ class DatabaseService {
         const updated: Project = {
             ...existing,
             ...data,
-            updatedAt: new Date(),
+            updatedAt: dateUtils.now(),
         };
 
         const result = await this.kv.set(["projects", id], updated);
@@ -137,7 +127,7 @@ class DatabaseService {
     //#region Time entry operations
     async createTimeEntry(data: CreateTimeEntryRequest): Promise<TimeEntry> {
         const id = crypto.randomUUID();
-        const now = new Date();
+        const now = dateUtils.now();
 
         const timeEntry: TimeEntry = {
             id,
@@ -170,16 +160,7 @@ class DatabaseService {
             return null;
         }
         
-        const timeEntry = result.value;
-        // Convert date strings back to Date objects
-        timeEntry.startTime = new Date(timeEntry.startTime);
-        if (timeEntry.endTime) {
-            timeEntry.endTime = new Date(timeEntry.endTime);
-        }
-        timeEntry.createdAt = new Date(timeEntry.createdAt);
-        timeEntry.updatedAt = new Date(timeEntry.updatedAt);
-        
-        return timeEntry;
+        return result.value;
     }
 
     async getAllTimeEntries(): Promise<TimeEntry[]> {
@@ -187,21 +168,14 @@ class DatabaseService {
         const iter = this.kv.list<TimeEntry>({ prefix: ["timeEntries"] });
 
         for await (const entry of iter) {
-            const timeEntry = entry.value;
-            // Convert date strings back to Date objects
-            timeEntry.startTime = new Date(timeEntry.startTime);
-            if (timeEntry.endTime) {
-                timeEntry.endTime = new Date(timeEntry.endTime);
-            }
-            timeEntry.createdAt = new Date(timeEntry.createdAt);
-            timeEntry.updatedAt = new Date(timeEntry.updatedAt);
-            
-            entries.push(timeEntry);
+            entries.push(entry.value);
         }
 
-        return entries.sort((a, b) =>
-            b.startTime.getTime() - a.startTime.getTime()
-        );
+        return entries.sort((a, b) => {
+            const aTime = dateUtils.toDate(b.startTime).getTime();
+            const bTime = dateUtils.toDate(a.startTime).getTime();
+            return aTime - bTime;
+        });
     }
 
     async getTimeEntriesByProject(projectId: string): Promise<TimeEntry[]> {
@@ -235,7 +209,7 @@ class DatabaseService {
         const updated: TimeEntry = {
             ...existing,
             ...data,
-            updatedAt: new Date(),
+            updatedAt: dateUtils.now(),
         };
 
         const result = await this.kv.set(["timeEntries", id], updated);
@@ -285,7 +259,7 @@ class DatabaseService {
         if (activeSession) {
             // End the current time entry
             await this.updateTimeEntry(activeSession.entryId, {
-                endTime: new Date(),
+                endTime: dateUtils.now(),
             });
         }
 
@@ -318,10 +292,10 @@ class DatabaseService {
 
     // Statistics
     async getTotalTimeToday(): Promise<number> {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        const today = dateUtils.startOfDay();
+        const tomorrow = dateUtils.startOfDay(
+            new Date(dateUtils.toDate(today).getTime() + 24 * 60 * 60 * 1000).toISOString()
+        );
 
         const entries = await this.getAllTimeEntries();
         const todayEntries = entries.filter((entry) =>
@@ -329,16 +303,12 @@ class DatabaseService {
         );
 
         return todayEntries.reduce((sum, entry) => {
-            const endTime = entry.endTime || new Date();
-            return sum + (endTime.getTime() - entry.startTime.getTime());
+            return sum + dateUtils.formatDuration(entry.startTime, entry.endTime);
         }, 0);
     }
 
     async getTotalTimeThisWeek(): Promise<number> {
-        const now = new Date();
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
-        startOfWeek.setHours(0, 0, 0, 0);
+        const startOfWeek = dateUtils.startOfWeek();
 
         const entries = await this.getAllTimeEntries();
         const weekEntries = entries.filter((entry) =>
@@ -346,8 +316,7 @@ class DatabaseService {
         );
 
         return weekEntries.reduce((sum, entry) => {
-            const endTime = entry.endTime || new Date();
-            return sum + (endTime.getTime() - entry.startTime.getTime());
+            return sum + dateUtils.formatDuration(entry.startTime, entry.endTime);
         }, 0);
     }
 }
