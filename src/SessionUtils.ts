@@ -92,7 +92,7 @@ export const SessionUtils = {
         const newUserID = crypto.randomUUID();
         const newUser: User = {
             id: newUserID,
-            name: `Player${Math.floor(Math.random() * 9000) + 1000}`, // Generate name like "Player1234"
+            name: `User-${Math.floor(Math.random() * 9000) + 1000}`, // Generate name like "Player1234"
         };
 
         const db = await getDatabase()
