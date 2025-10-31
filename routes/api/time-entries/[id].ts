@@ -3,13 +3,15 @@
 import { define } from "../../../utils.ts";
 import { getDatabase } from "../../../src/database.ts";
 import type { UpdateTimeEntryRequest } from "../../../src/types.ts";
+import { SessionUtils } from "src/SessionUtils.ts";
 
 export const handler = define.handlers({
     async GET(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
             const { id } = ctx.params;
             const db = await getDatabase();
-            const timeEntry = await db.getTimeEntry(id);
+            const timeEntry = await db.getTimeEntry(user.id, id);
 
             if (!timeEntry) {
                 return new Response(
@@ -38,11 +40,13 @@ export const handler = define.handlers({
 
     async PUT(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const { id } = ctx.params;
             const body = await ctx.req.json() as UpdateTimeEntryRequest;
 
             const db = await getDatabase();
-            const timeEntry = await db.updateTimeEntry(id, body);
+            const timeEntry = await db.updateTimeEntry(user.id, id, body);
 
             if (!timeEntry) {
                 return new Response(
@@ -71,10 +75,12 @@ export const handler = define.handlers({
 
     async DELETE(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+            
             const { id } = ctx.params;
             const db = await getDatabase();
 
-            await db.deleteTimeEntry(id);
+            await db.deleteTimeEntry(user.id, id);
 
             return new Response(JSON.stringify({ success: true }), {
                 headers: { "Content-Type": "application/json" },

@@ -2,10 +2,13 @@
 
 import { define } from "../../utils.ts";
 import { getDatabase } from "../../src/database.ts";
+import { SessionUtils } from "src/SessionUtils.ts";
 
 export const handler = define.handlers({
-    async POST(_ctx) {
+    async POST(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const db = await getDatabase();
 
             // Create some sample projects
@@ -35,7 +38,7 @@ export const handler = define.handlers({
             const createdProjects = [];
             for (const projectData of sampleProjects) {
                 try {
-                    const project = await db.createProject(projectData);
+                    const project = await db.createProject(user.id, projectData);
                     createdProjects.push(project);
                 } catch (error) {
                     console.log(

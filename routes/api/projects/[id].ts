@@ -3,13 +3,16 @@
 import { define } from "../../../utils.ts";
 import { getDatabase } from "../../../src/database.ts";
 import type { UpdateProjectRequest } from "../../../src/types.ts";
+import { SessionUtils } from "src/SessionUtils.ts";
 
 export const handler = define.handlers({
     async GET(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const { id } = ctx.params;
             const db = await getDatabase();
-            const project = await db.getProject(id);
+            const project = await db.getProject(user.id, id);
 
             if (!project) {
                 return new Response(
@@ -38,11 +41,13 @@ export const handler = define.handlers({
 
     async PUT(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const { id } = ctx.params;
             const body = await ctx.req.json() as UpdateProjectRequest;
 
             const db = await getDatabase();
-            const project = await db.updateProject(id, body);
+            const project = await db.updateProject(user.id, id, body);
 
             if (!project) {
                 return new Response(
@@ -71,10 +76,12 @@ export const handler = define.handlers({
 
     async DELETE(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const { id } = ctx.params;
             const db = await getDatabase();
 
-            await db.deleteProject(id);
+            await db.deleteProject(user.id, id);
 
             return new Response(JSON.stringify({ success: true }), {
                 headers: { "Content-Type": "application/json" },

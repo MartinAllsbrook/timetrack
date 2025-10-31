@@ -23,7 +23,7 @@ class DatabaseService {
 
     //#region Project operations
 
-    async createProject(data: CreateProjectRequest): Promise<Project> {
+    async createProject(userId: string, data: CreateProjectRequest): Promise<Project> {
         const id = crypto.randomUUID();
         const now = dateUtils.now();
 
@@ -36,7 +36,7 @@ class DatabaseService {
             updatedAt: now,
         };
 
-        const result = await this.kv.set(["projects", id], project);
+        const result = await this.kv.set(["user_data", userId, "projects", id], project);
         if (!result.ok) {
             throw new Error("Failed to create project");
         }
@@ -44,8 +44,8 @@ class DatabaseService {
         return project;
     }
 
-    async getProject(id: string): Promise<Project | null> {
-        const result = await this.kv.get<Project>(["projects", id]);
+    async getProject(userId: string, id: string): Promise<Project | null> {
+        const result = await this.kv.get<Project>(["user_data", userId, "projects", id]);
         if (!result.value) {
             return null;
         }
@@ -53,9 +53,9 @@ class DatabaseService {
         return result.value;
     }
 
-    async getAllProjects(): Promise<Project[]> {
+    async getAllProjects(userId: string): Promise<Project[]> {
         const projects: Project[] = [];
-        const iter = this.kv.list<Project>({ prefix: ["projects"] });
+        const iter = this.kv.list<Project>({ prefix: ["user_data", userId, "projects"] });
 
         for await (const entry of iter) {
             projects.push(entry.value);
@@ -64,12 +64,12 @@ class DatabaseService {
         return projects.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    async getProjectsWithStats(): Promise<ProjectWithStats[]> {
-        const projects = await this.getAllProjects();
+    async getProjectsWithStats(userId: string): Promise<ProjectWithStats[]> {
+        const projects = await this.getAllProjects(userId);
         const projectsWithStats: ProjectWithStats[] = [];
 
         for (const project of projects) {
-            const entries = await this.getTimeEntriesByProject(project.id);
+            const entries = await this.getTimeEntriesByProject(userId, project.id);
             const totalTime = entries.reduce((sum, entry) => {
                 if (entry.endTime) {
                     return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
@@ -90,10 +90,11 @@ class DatabaseService {
     }
 
     async updateProject(
+        userId: string,
         id: string,
         data: UpdateProjectRequest,
     ): Promise<Project | null> {
-        const existing = await this.getProject(id);
+        const existing = await this.getProject(userId, id);
         if (!existing) {
             return null;
         }
@@ -104,7 +105,7 @@ class DatabaseService {
             updatedAt: dateUtils.now(),
         };
 
-        const result = await this.kv.set(["projects", id], updated);
+        const result = await this.kv.set(["user_data", userId, "projects", id], updated);
         if (!result.ok) {
             throw new Error("Failed to update project");
         }
@@ -112,21 +113,21 @@ class DatabaseService {
         return updated;
     }
 
-    async deleteProject(id: string): Promise<boolean> {
+    async deleteProject(userId: string, id: string): Promise<boolean> {
         // First check if there are any time entries for this project
-        const entries = await this.getTimeEntriesByProject(id);
+        const entries = await this.getTimeEntriesByProject(userId, id);
         if (entries.length > 0) {
             throw new Error("Cannot delete project with existing time entries");
         }
 
-        await this.kv.delete(["projects", id]);
+        await this.kv.delete(["user_data", userId, "projects", id]);
         return true;
     }
 
     //#endregion
 
     //#region Time entry operations
-    async createTimeEntry(data: CreateTimeEntryRequest): Promise<TimeEntry> {
+    async createTimeEntry(userId: string, data: CreateTimeEntryRequest): Promise<TimeEntry> {
         const id = crypto.randomUUID();
         const now = dateUtils.now();
 
@@ -140,13 +141,13 @@ class DatabaseService {
             updatedAt: now,
         };
 
-        const result = await this.kv.set(["timeEntries", id], timeEntry);
+        const result = await this.kv.set(["user_data", userId, "timeEntries", id], timeEntry);
         if (!result.ok) {
             throw new Error("Failed to create time entry");
         }
 
         // Set as active session
-        await this.setActiveSession({
+        await this.setActiveSession(userId, {
             entryId: id,
             projectId: data.projectId,
             startTime: now,
@@ -155,8 +156,8 @@ class DatabaseService {
         return timeEntry;
     }
 
-    async getTimeEntry(id: string): Promise<TimeEntry | null> {
-        const result = await this.kv.get<TimeEntry>(["timeEntries", id]);
+    async getTimeEntry(userId: string, id: string): Promise<TimeEntry | null> {
+        const result = await this.kv.get<TimeEntry>(["user_data", userId, "timeEntries", id]);
         if (!result.value) {
             return null;
         }
@@ -164,9 +165,9 @@ class DatabaseService {
         return result.value;
     }
 
-    async getAllTimeEntries(): Promise<TimeEntry[]> {
+    async getAllTimeEntries(userId: string): Promise<TimeEntry[]> {
         const entries: TimeEntry[] = [];
-        const iter = this.kv.list<TimeEntry>({ prefix: ["timeEntries"] });
+        const iter = this.kv.list<TimeEntry>({ prefix: ["user_data", userId, "timeEntries"] });
 
         for await (const entry of iter) {
             entries.push(entry.value);
@@ -179,14 +180,14 @@ class DatabaseService {
         });
     }
 
-    async getTimeEntriesByProject(projectId: string): Promise<TimeEntry[]> {
-        const allEntries = await this.getAllTimeEntries();
+    async getTimeEntriesByProject(userId: string, projectId: string): Promise<TimeEntry[]> {
+        const allEntries = await this.getAllTimeEntries(userId);
         return allEntries.filter((entry) => entry.projectId === projectId);
     }
 
-    async getTimeEntriesWithProjects(): Promise<TimeEntryWithProject[]> {
-        const entries = await this.getAllTimeEntries();
-        const projects = await this.getAllProjects();
+    async getTimeEntriesWithProjects(userId: string): Promise<TimeEntryWithProject[]> {
+        const entries = await this.getAllTimeEntries(userId);
+        const projects = await this.getAllProjects(userId);
         const projectMap = new Map(projects.map((p) => [p.id, p]));
 
         return entries
@@ -199,10 +200,11 @@ class DatabaseService {
     }
 
     async updateTimeEntry(
+        userId: string,
         id: string,
         data: UpdateTimeEntryRequest,
     ): Promise<TimeEntry | null> {
-        const existing = await this.getTimeEntry(id);
+        const existing = await this.getTimeEntry(userId, id);
         if (!existing) {
             return null;
         }
@@ -213,58 +215,58 @@ class DatabaseService {
             updatedAt: dateUtils.now(),
         };
 
-        const result = await this.kv.set(["timeEntries", id], updated);
+        const result = await this.kv.set(["user_data", userId, "timeEntries", id], updated);
         if (!result.ok) {
             throw new Error("Failed to update time entry");
         }
 
         // If ending the entry, clear active session
         if (data.endTime && !existing.endTime) {
-            await this.clearActiveSession();
+            await this.clearActiveSession(userId);
         }
 
         return updated;
     }
 
-    async deleteTimeEntry(id: string): Promise<boolean> {
-        const entry = await this.getTimeEntry(id);
+    async deleteTimeEntry(userId: string, id: string): Promise<boolean> {
+        const entry = await this.getTimeEntry(userId, id);
         if (entry && !entry.endTime) {
             // If deleting an active entry, clear the active session
-            await this.clearActiveSession();
+            await this.clearActiveSession(userId);
         }
 
-        await this.kv.delete(["timeEntries", id]);
+        await this.kv.delete(["user_data", userId, "timeEntries", id]);
         return true;
     }
 
     //#endregion
 
     //#region Active session operations
-    async getActiveSession(): Promise<ActiveSession | null> {
-        const result = await this.kv.get<ActiveSession>(["activeSession"]);
+    async getActiveSession(userId: string): Promise<ActiveSession | null> {
+        const result = await this.kv.get<ActiveSession>(["user_data", userId, "activeSession"]);
         return result.value;
     }
 
-    async setActiveSession(session: ActiveSession): Promise<void> {
+    async setActiveSession(userId: string, session: ActiveSession): Promise<void> {
         // First clear any existing active session
-        await this.clearActiveSession();
+        await this.clearActiveSession(userId);
 
-        const result = await this.kv.set(["activeSession"], session);
+        const result = await this.kv.set(["user_data", userId, "activeSession"], session);
         if (!result.ok) {
             throw new Error("Failed to set active session");
         }
     }
 
-    async clearActiveSession(): Promise<void> {
-        const activeSession = await this.getActiveSession();
+    async clearActiveSession(userId: string): Promise<void> {
+        const activeSession = await this.getActiveSession(userId);
         if (activeSession) {
             // End the current time entry
-            await this.updateTimeEntry(activeSession.entryId, {
+            await this.updateTimeEntry(userId, activeSession.entryId, {
                 endTime: dateUtils.now(),
             });
         }
 
-        await this.kv.delete(["activeSession"]);
+        await this.kv.delete(["user_data", userId, "activeSession"]);
     }
     //#endregion
 
@@ -328,13 +330,13 @@ class DatabaseService {
     //#endregion
 
     //#region Statistics
-    async getTotalTimeToday(): Promise<number> {
+    async getTotalTimeToday(userId: string): Promise<number> {
         const today = dateUtils.startOfDay();
         const tomorrow = dateUtils.startOfDay(
             new Date(dateUtils.toDate(today).getTime() + 24 * 60 * 60 * 1000).toISOString()
         );
 
-        const entries = await this.getAllTimeEntries();
+        const entries = await this.getAllTimeEntries(userId);
         const todayEntries = entries.filter((entry) =>
             entry.startTime >= today && entry.startTime < tomorrow
         );
@@ -343,10 +345,10 @@ class DatabaseService {
             return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
         }, 0);
     }
-    async getTotalTimeThisWeek(): Promise<number> {
+    async getTotalTimeThisWeek(userId: string): Promise<number> {
         const startOfWeek = dateUtils.startOfWeek();
 
-        const entries = await this.getAllTimeEntries();
+        const entries = await this.getAllTimeEntries(userId);
         const weekEntries = entries.filter((entry) =>
             entry.startTime >= startOfWeek
         );
@@ -354,6 +356,59 @@ class DatabaseService {
         return weekEntries.reduce((sum, entry) => {
             return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
         }, 0);
+    }
+    //#endregion
+
+    //#region Migration utilities
+    /**
+     * Migrates existing data from the old flat structure to the new user-scoped structure.
+     * This should be run once after updating to the new database schema.
+     * @param defaultUserId - The user ID to assign to existing data
+     */
+    async migrateToUserScopedData(defaultUserId: string): Promise<void> {
+        console.log("Starting migration to user-scoped data structure...");
+
+        // Migrate projects
+        const oldProjects = this.kv.list<Project>({ prefix: ["projects"] });
+        for await (const entry of oldProjects) {
+            const project = entry.value;
+            await this.kv.set(["user_data", defaultUserId, "projects", project.id], project);
+            await this.kv.delete(entry.key);
+            console.log(`Migrated project: ${project.name}`);
+        }
+
+        // Migrate time entries
+        const oldTimeEntries = this.kv.list<TimeEntry>({ prefix: ["timeEntries"] });
+        for await (const entry of oldTimeEntries) {
+            const timeEntry = entry.value;
+            await this.kv.set(["user_data", defaultUserId, "timeEntries", timeEntry.id], timeEntry);
+            await this.kv.delete(entry.key);
+            console.log(`Migrated time entry: ${timeEntry.id}`);
+        }
+
+        // Migrate active session
+        const oldActiveSession = await this.kv.get<ActiveSession>(["activeSession"]);
+        if (oldActiveSession.value) {
+            await this.kv.set(["user_data", defaultUserId, "activeSession"], oldActiveSession.value);
+            await this.kv.delete(["activeSession"]);
+            console.log("Migrated active session");
+        }
+
+        console.log("Migration completed successfully!");
+    }
+
+    /**
+     * Gets all user IDs in the database
+     */
+    async getAllUserIds(): Promise<string[]> {
+        const userIds: string[] = [];
+        const iter = this.kv.list<User>({ prefix: ["users"] });
+
+        for await (const entry of iter) {
+            userIds.push(entry.value.id);
+        }
+
+        return userIds;
     }
     //#endregion
 }

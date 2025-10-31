@@ -3,12 +3,15 @@
 import { define } from "../../utils.ts";
 import { getDatabase } from "../../src/database.ts";
 import type { CreateProjectRequest } from "../../src/types.ts";
+import { SessionUtils } from "../../src/SessionUtils.ts";
 
 export const handler = define.handlers({
-    async GET(_ctx) {
+    async GET(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+            
             const db = await getDatabase();
-            const projects = await db.getProjectsWithStats();
+            const projects = await db.getProjectsWithStats(user.id);
 
             return new Response(JSON.stringify(projects), {
                 headers: { "Content-Type": "application/json" },
@@ -27,6 +30,8 @@ export const handler = define.handlers({
 
     async POST(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const body = await ctx.req.json() as CreateProjectRequest;
 
             if (!body.name || body.name.trim() === "") {
@@ -40,7 +45,7 @@ export const handler = define.handlers({
             }
 
             const db = await getDatabase();
-            const project = await db.createProject(body);
+            const project = await db.createProject(user.id, body);
 
             return new Response(JSON.stringify(project), {
                 status: 201,

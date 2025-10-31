@@ -1,5 +1,4 @@
-// Database and application types for the time tracking app
-
+//#region Database and application types for the time tracking app
 export interface Project {
     id: string;
     name: string;
@@ -24,8 +23,9 @@ export interface ActiveSession {
     projectId: string;
     startTime: string; // ISO date string
 }
+//#endregion
 
-// API Response types
+//#region API Response types
 export interface TimeEntryWithProject extends TimeEntry {
     project: Project;
 }
@@ -34,8 +34,9 @@ export interface ProjectWithStats extends Project {
     totalTime: number; // in milliseconds
     activeEntry?: TimeEntry;
 }
+//#endregion
 
-// API Request types
+//#region API Request types
 export interface CreateProjectRequest {
     name: string;
     description?: string;
@@ -59,8 +60,9 @@ export interface UpdateTimeEntryRequest {
     projectId?: string;
     startTime?: string; // ISO date string
 }
+//#endregion
 
-// Application state
+//#region Application state
 export interface TimeTrackingState {
     projects: Project[];
     timeEntries: TimeEntry[];
@@ -68,8 +70,9 @@ export interface TimeTrackingState {
     selectedProjectId: string | null;
     isLoading: boolean;
 }
+//#endregion
 
-// Authentication
+//#region Authentication
 /**
  * Represents the current user's authentication session state
  */
@@ -91,6 +94,7 @@ export interface User {
     githubUsername?: string;
     avatarUrl?: string;
 }
+//#endregion
 
 // Date utility functions
 export const dateUtils = {

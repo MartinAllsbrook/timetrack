@@ -3,12 +3,15 @@
 import { define } from "../../utils.ts";
 import { getDatabase } from "../../src/database.ts";
 import type { CreateTimeEntryRequest } from "../../src/types.ts";
+import { SessionUtils } from "src/SessionUtils.ts";
 
 export const handler = define.handlers({
-    async GET(_ctx) {
+    async GET(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const db = await getDatabase();
-            const entries = await db.getTimeEntriesWithProjects();
+            const entries = await db.getTimeEntriesWithProjects(user.id);
 
             return new Response(JSON.stringify(entries), {
                 headers: { "Content-Type": "application/json" },
@@ -27,6 +30,8 @@ export const handler = define.handlers({
 
     async POST(ctx) {
         try {
+            const user = await SessionUtils.requireApiAuth(ctx.req);
+
             const body = await ctx.req.json() as CreateTimeEntryRequest;
 
             if (!body.projectId) {
@@ -42,12 +47,12 @@ export const handler = define.handlers({
             const db = await getDatabase();
 
             // Check if there's an active session and end it first
-            const activeSession = await db.getActiveSession();
+            const activeSession = await db.getActiveSession(user.id);
             if (activeSession) {
-                await db.clearActiveSession();
+                await db.clearActiveSession(user.id);
             }
 
-            const timeEntry = await db.createTimeEntry(body);
+            const timeEntry = await db.createTimeEntry(user.id, body);
 
             return new Response(JSON.stringify(timeEntry), {
                 status: 201,
