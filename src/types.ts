@@ -69,6 +69,29 @@ export interface TimeTrackingState {
     isLoading: boolean;
 }
 
+// Authentication
+/**
+ * Represents the current user's authentication session state
+ */
+export interface AuthSession {
+    /** The authenticated user object, null if not authenticated */
+    user: User | null;
+    /** Whether the user is currently authenticated */
+    isAuthenticated: boolean;
+    /** Whether the user has linked their GitHub account */
+    isGitHubLinked: boolean;
+}
+
+export interface User {
+    id: string;
+    name: string;
+
+    // GitHub OAuth fields
+    githubId?: number;
+    githubUsername?: string;
+    avatarUrl?: string;
+}
+
 // Date utility functions
 export const dateUtils = {
     // Get current time as ISO string

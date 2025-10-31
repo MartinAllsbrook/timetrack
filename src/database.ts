@@ -10,6 +10,7 @@ import type {
     TimeEntryWithProject,
     UpdateProjectRequest,
     UpdateTimeEntryRequest,
+    User,
 } from "./types.ts";
 import { dateUtils } from "./types.ts";
 
@@ -238,7 +239,7 @@ class DatabaseService {
 
     //#endregion
 
-    // Active session operations
+    //#region Active session operations
     async getActiveSession(): Promise<ActiveSession | null> {
         const result = await this.kv.get<ActiveSession>(["activeSession"]);
         return result.value;
@@ -265,8 +266,43 @@ class DatabaseService {
 
         await this.kv.delete(["activeSession"]);
     }
+    //#endregion
 
-    // Utility methods
+    //#region Authentication
+    /**
+     * Adds a user to the database.
+     * @param user - The user object to add.
+     */
+    public async addUser(user: User): Promise<void> {
+        const response = await this.kv.get<User>(["users", user.id]);
+        if (response.value) {
+            console.warn("User already exists:", user.id);
+            return;
+        }
+        await this.kv.set(["users", user.id], user);
+    }
+
+    /**
+     * Updates an existing user in the database.
+     * @param user - The user object to update.
+     */
+    public async updateUser(user: User): Promise<void> {
+        const key = ["users", user.id];
+        await this.kv.set(key, user);
+    }
+
+    /**
+     * Retrieves a user from the database.
+     * @param userID - The ID of the user to retrieve.
+     * @returns The User object if found, otherwise null.
+     */
+    public async getUser(userID: string): Promise<User | null> {
+        const result = await this.kv.get<User>(["users", userID]);
+        return result.value;
+    }
+    //#endregion
+
+    //#region Utility methods
     private generateRandomColor(): string {
         const colors = [
             "#ef4444",
@@ -289,8 +325,9 @@ class DatabaseService {
         ];
         return colors[Math.floor(Math.random() * colors.length)];
     }
+    //#endregion
 
-    // Statistics
+    //#region Statistics
     async getTotalTimeToday(): Promise<number> {
         const today = dateUtils.startOfDay();
         const tomorrow = dateUtils.startOfDay(
@@ -306,7 +343,6 @@ class DatabaseService {
             return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
         }, 0);
     }
-
     async getTotalTimeThisWeek(): Promise<number> {
         const startOfWeek = dateUtils.startOfWeek();
 
@@ -319,9 +355,10 @@ class DatabaseService {
             return sum + dateUtils.getDurationMs(entry.startTime, entry.endTime);
         }, 0);
     }
+    //#endregion
 }
 
-// Global database instance
+//#region Global database instance
 let dbInstance: DatabaseService | null = null;
 
 export async function getDatabase(): Promise<DatabaseService> {
@@ -333,3 +370,4 @@ export async function getDatabase(): Promise<DatabaseService> {
 }
 
 export { DatabaseService };
+//#endregion

@@ -26,6 +26,7 @@
         "**/_fresh/*"
     ],
     "imports": {
+        "@std/http": "jsr:@std/http@^1.0.21",
         "fresh": "jsr:@fresh/core@^2.1.2",
         "preact": "npm:preact@^10.27.2",
         "@preact/signals": "npm:@preact/signals@^2.3.1",
