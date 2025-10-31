@@ -14,6 +14,7 @@ import EditProjectModal from "components/EditProjectModal.tsx";
 import Timeline from "components/timeline/Timeline.tsx";
 import { TrackingBar } from "components/active/TrackingBar.tsx";
 import { EntryModal } from "components/entries/EntryModal.tsx";
+import { UserButton } from "components/user/UserButton.tsx";
 
 export default function TimeTracker() {
     // Signals for state management
@@ -347,98 +348,101 @@ export default function TimeTracker() {
     return (
         <div class="max-w-6xl mx-auto space-y-6">
             {/* Header */}
-            <div class="text-center">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                    Time Tracker
-                </h1>
-                <p class="text-gray-600">
-                    Track your time across different projects
-                </p>
+            <div class="flex items-center justify-between">
+                <div class="text-left">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                        Time Tracker
+                    </h1>
+                    <p class="text-gray-600">
+                        Track your time across different projects
+                    </p>
+                </div>
+                <UserButton />
             </div>
 
             <TrackingBar 
-                projects={projects}
-                selectedProjectId={selectedProjectId}
-                editActiveEntry={editActiveEntry}
-                activeSession={activeSession}
-                selectedProject={selectedProject}
-                onStart={startTracking}
-                onStop={stopTracking}
-                isLoading={isLoading}
+            projects={projects}
+            selectedProjectId={selectedProjectId}
+            editActiveEntry={editActiveEntry}
+            activeSession={activeSession}
+            selectedProject={selectedProject}
+            onStart={startTracking}
+            onStop={stopTracking}
+            isLoading={isLoading}
             />
 
             <div>
-                <Timeline
-                    date={new Date()}
-                    timeEntries={timeEntries.value}
-                    onEntryClick={openEntryModal}
-                />
+            <Timeline
+                date={new Date()}
+                timeEntries={timeEntries.value}
+                onEntryClick={openEntryModal}
+            />
             </div>
 
             {/* Main Content Grid */}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Left Column */}
-                <div class="space-y-6">
-                    {/* <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <CurrentEntryEditor
-                            projects={projects}
-                            selectedProjectId={selectedProjectId}
-                            editActiveEntry={editActiveEntry}
-                        />
-                    </div> */}
+            {/* Left Column */}
+            <div class="space-y-6">
+                {/* <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <CurrentEntryEditor
+                    projects={projects}
+                    selectedProjectId={selectedProjectId}
+                    editActiveEntry={editActiveEntry}
+                />
+                </div> */}
 
-                    {/* Timer */}
-                    {/* <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <Timer
-                            activeSession={activeSession}
-                            selectedProject={selectedProject}
-                            onStart={startTracking}
-                            onStop={stopTracking}
-                            isLoading={isLoading}
-                        />
-                    </div> */}
-                    {/* Project Selector */}
-                    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                        <ProjectEditor
-                            projects={projects}
-                            onCreateProject={openCreateModal}
-                            onProjectEdit={openEditModal}
-                        />
-                    </div>
+                {/* Timer */}
+                {/* <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <Timer
+                    activeSession={activeSession}
+                    selectedProject={selectedProject}
+                    onStart={startTracking}
+                    onStop={stopTracking}
+                    isLoading={isLoading}
+                />
+                </div> */}
+                {/* Project Selector */}
+                <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <ProjectEditor
+                    projects={projects}
+                    onCreateProject={openCreateModal}
+                    onProjectEdit={openEditModal}
+                />
                 </div>
+            </div>
 
-                {/* Right Column */}
-                <div class="space-y-6">
-                    <TimeEntriesList
-                        timeEntries={timeEntries}
-                        onDeleteEntry={deleteTimeEntry}
-                    />
+            {/* Right Column */}
+            <div class="space-y-6">
+                <TimeEntriesList
+                timeEntries={timeEntries}
+                onDeleteEntry={deleteTimeEntry}
+                />
 
-                    
-                </div>
+                
+            </div>
             </div>
 
             {/* Dummy TimeEntry data for EntryModal */}
             {entryToEdit.value && <EntryModal 
-                isOpen={entryModalOpen.value} // Do we need this?
-                entry={entryToEdit.value}
-                onClose={closeEntryModal}
-                onUpdate={editTimeEntry}
-                projects={projects.value}
+            isOpen={entryModalOpen.value} // Do we need this?
+            entry={entryToEdit.value}
+            onClose={closeEntryModal}
+            onUpdate={editTimeEntry}
+            projects={projects.value}
             />}
 
             {/* Create Project Modal */}
             <CreateProjectModal
-                isOpen={isCreateModalOpen.value}
-                onClose={closeCreateModal}
-                onCreateProject={createProject}
+            isOpen={isCreateModalOpen.value}
+            onClose={closeCreateModal}
+            onCreateProject={createProject}
             />
 
             {/* Edit Project Modal */}
             <EditProjectModal
-                onClose={closeEditModal}
-                project={projectToEditId.value}
-                onEditProject={editProject}
+            onClose={closeEditModal}
+            project={projectToEditId.value}
+            onEditProject={editProject}
             />
         </div>
     );

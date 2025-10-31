@@ -70,7 +70,7 @@ export default function EditProjectModal(props: EditProjectModalProps) {
 
     return (
         <div class="fixed inset-0 flex items-center justify-center p-4 z-50">
-            <div className="absolute inset-0 bg-black opacity-25"></div>
+            <div className="absolute inset-0 bg-black opacity-25 -z-10"></div>
             <div class="bg-white rounded-lg p-6 w-full max-w-md">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">
                     Edit Project
