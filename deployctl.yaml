@@ -1,0 +1,14 @@
+# Deno Deploy configuration
+# This file configures your deployment with unstable KV support
+
+project: timetrack
+entrypoint: main.ts
+
+# Enable unstable features
+flags:
+  - --unstable-kv
+  - --allow-all
+
+# Optional: specify environment variables
+# env:
+#   NODE_ENV: production
